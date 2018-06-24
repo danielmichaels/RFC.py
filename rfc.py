@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#TODO: catgeorise into types
+#TODO: categorise into types
 #TODO: change url and get html version
 #TODO: parse html get Title & Number --> RFC {num} - {title}.txt
 #TODO: categorise files and sort into folders by category
@@ -69,15 +69,13 @@ def iterate_over_rfcs(total_rfc):
 
     session = FuturesSession(max_workers=10)
     for num in range(1, total_rfc):
-        url = f"https://www.rfc-editor.org/rfc/rfc{num}.txt"
-        filename = f'RFC-{num:04d}.txt'
-        files = [file for file in os.listdir(os.getcwd())]
-        if filename not in files:
+        url = f"https://tools.ietf.org/html/rfc{num}"
+        if not [file for file in os.listdir() if file.startswith(f"RFC {num}")]:
             future = session.get(url, headers=random_header())
             resp = future.result()
             if resp.status_code == 200:
                 text = resp.text
-                create_files(num, text, filename)
+                write_to_file(num, text)
         else:
             print(f"RFC {num:04d} Exists.. Skipping..")
 
@@ -85,17 +83,34 @@ def iterate_over_rfcs(total_rfc):
         print(f"RFC {num:04d} DOES NOT EXIST")
 
 
-def create_files(num, text, filename):
+def write_to_file(num, text):
     """Function that creates text files from the RFC website.
 
     :argument num: takes the RFC number as part of the filename
     :argument text: writes the response text from the webpage into the file.
     :argument filename: takes filename from :func: check_exists
     """
-    with open(filename, 'w') as fout:
-        fout.write(text)
-        print(f"RFC {num:04d} downloaded!")
+    try:
+        filename = get_filename(text)
+        text = get_text(text)
+        with open(filename, 'w') as fout:
+            fout.write(text)
+            print(f"RFC {num:04d} downloaded!")
+    except FileNotFoundError or FileExistsError as e:
+        logging.warning(f"{e} presented for {filename}")
+        pass
 
+
+def get_filename(text):
+    # parse the soup and get title & category for filename creation
+    soup = BeautifulSoup(text, 'lxml')
+    title = soup.title.text
+    return title
+
+def get_text(text):
+    soup = BeautifulSoup(text, 'lxml')
+    clean_text = soup.body.get_text()
+    return clean_text
 
 def get_rfc_total():
     """Reach out to rfc-editor.org and scrape the table to get the total
