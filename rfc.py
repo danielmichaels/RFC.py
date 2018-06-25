@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-#TODO: categorise into types
-#TODO: change url and get html version
-#TODO: parse html get Title & Number --> RFC {num} - {title}.txt
-#TODO: categorise files and sort into folders by category
+# TODO: categorise into types
+# TODO: change url and get html version
+# TODO: parse html get Title & Number --> RFC {num} - {title}.txt
+# TODO: categorise files and sort into folders by category
 from random import choice
 from time import time
 from requests import ConnectionError
@@ -70,7 +70,8 @@ def iterate_over_rfcs(total_rfc):
     session = FuturesSession(max_workers=10)
     for num in range(1, total_rfc):
         url = f"https://tools.ietf.org/html/rfc{num}"
-        if not [file for file in os.listdir() if file.startswith(f"RFC {num}")]:
+        if not [file for file in os.listdir() if
+                file.startswith(f"RFC {num}")]:
             future = session.get(url, headers=random_header())
             resp = future.result()
             if resp.status_code == 200:
@@ -92,7 +93,9 @@ def write_to_file(num, text):
     """
     try:
         filename = get_filename(text)
+        filename = cleanup_character_escapes(filename)
         text = get_text(text)
+
         with open(filename, 'w') as fout:
             fout.write(text)
             print(f"RFC {num:04d} downloaded!")
@@ -107,10 +110,18 @@ def get_filename(text):
     title = soup.title.text
     return title
 
+
 def get_text(text):
     soup = BeautifulSoup(text, 'lxml')
     clean_text = soup.body.get_text()
     return clean_text
+
+
+def cleanup_character_escapes(text):
+    """Remove / symbol to stop traversal errors when saving filenames."""
+    text = text.replace('/', ' ')
+    return text
+
 
 def get_rfc_total():
     """Reach out to rfc-editor.org and scrape the table to get the total
