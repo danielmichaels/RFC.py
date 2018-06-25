@@ -89,7 +89,6 @@ def write_to_file(num, text):
 
     :argument num: takes the RFC number as part of the filename
     :argument text: writes the response text from the webpage into the file.
-    :argument filename: takes filename from :func: check_exists
     """
     try:
         filename = get_filename(text)
@@ -105,13 +104,15 @@ def write_to_file(num, text):
 
 
 def get_filename(text):
-    # parse the soup and get title & category for filename creation
+    """Parse's HTML title from each RFC and extracts it for consumption
+    elsewhere. Takes response.text has argument. """
     soup = BeautifulSoup(text, 'lxml')
     title = soup.title.text
     return title
 
 
 def get_text(text):
+    """Get only text from the HTML body of each RFC page."""
     soup = BeautifulSoup(text, 'lxml')
     clean_text = soup.body.get_text()
     return clean_text
