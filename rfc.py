@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-# TODO: categorise into types
-# TODO: change url and get html version
-# TODO: parse html get Title & Number --> RFC {num} - {title}.txt
-# TODO: categorise files and sort into folders by category
 from random import choice
 from time import time
 from requests import ConnectionError
@@ -95,12 +91,35 @@ def write_to_file(num, text):
         filename = cleanup_character_escapes(filename)
         text = get_text(text)
 
-        with open(filename, 'w') as fout:
+        with open(f'{filename}.txt', 'w') as fout:
+            # visual debugging only - remove category from filename.
             fout.write(text)
             print(f"RFC {num:04d} downloaded!")
     except FileNotFoundError or FileExistsError as e:
         logging.warning(f"{e} presented for {filename}")
+    except AttributeError as e:
+        logging.warning(f"{e} has caused an error.")
         pass
+
+
+def get_categories(text):
+    header = get_header(text)
+    categories = [
+        "Standards Track", "Informational", "Experimental", "Historic",
+        "Best Current Practice", "Proposed Standard", "Internet Standard"
+    ]
+    # link proposed and internet standard into Standards Track folder.
+    for category in categories:
+        if category.lower() in header:
+            return category
+        if category.lower() not in header:
+            return "Uncategorised"
+
+
+def get_header(text):
+    soup = BeautifulSoup(text, 'lxml')
+    header = soup.pre.next_element.strip()
+    return header.lower()
 
 
 def get_filename(text):
