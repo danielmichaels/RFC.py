@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+from bs4 import BeautifulSoup
+from peewee import *
 from random import choice
-from time import time
 from requests import ConnectionError
 from requests_futures.sessions import FuturesSession
-from bs4 import BeautifulSoup
+from time import time
 
 import logging
 import os
@@ -153,7 +154,7 @@ def get_rfc_total():
     url = 'https://www.rfc-editor.org/rfc-index.html'
     resp = requests.get(url)
     text = resp.text
-    soup = BeautifulSoup(text, 'html.parser')
+    soup = BeautifulSoup(text, 'lxml')
     tables = soup.find_all('table')
     rfc_table = tables[2].find_all('tr')
     logging.info(f'Number of RFC\'s available for download: {len(rfc_table)}')
