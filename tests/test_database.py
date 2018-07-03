@@ -1,9 +1,9 @@
 import unittest
 from peewee import *
+
 from models import Data
 
-# test_db = SqliteDatabase('wee.db', pragmas={'journal_mode': 'wal'})
-test_db = SqliteDatabase('wee.db')
+test_db = SqliteDatabase(':memory:')
 
 
 class TestDB(unittest.TestCase):
