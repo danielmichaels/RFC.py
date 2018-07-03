@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
-from bs4 import BeautifulSoup
-from peewee import *
-from random import choice
-from requests import ConnectionError
-from requests_futures.sessions import FuturesSession
 from time import time
 
 import logging
 import os
 import pathlib
 import requests
+from bs4 import BeautifulSoup
+from peewee import *
+from random import choice
+from requests import ConnectionError
+from requests_futures.sessions import FuturesSession
+
+from models import Data, db
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,13 +19,9 @@ logging.basicConfig(level=logging.INFO)
 def main():
     try:
         total_rfc = get_rfc_total()
-        logging.info(f'Current total of published RFC\'s: {total_rfc}')
-        check_folder_exists()
-        folder = os.path.join(pathlib.Path.home(), 'Code/RFC list')
-        os.chdir(folder)
-        logging.info(f'changed dir to: {folder}')
         start = time()
-        iterate_over_rfcs(total_rfc)
+        # iterate_over_rfcs(total_rfc)
+        iterate_over_rfcs(total_rfc=25)  # manual debug only
         end = time()
         logging.info(f'This took: {end - start} to run!')
 
@@ -35,11 +33,6 @@ def main():
 
     except KeyboardInterrupt:
         print('User exited using CTRL-C')
-
-    finally:
-        logging.info(f'Total number RFC text files: {len(os.listdir())}')
-        cur_dir = pathlib.Path(__file__).parent
-        logging.info(f'changed dir to: {cur_dir}')
 
 
 def random_header():
@@ -67,13 +60,12 @@ def iterate_over_rfcs(total_rfc):
     session = FuturesSession(max_workers=10)
     for num in range(1, total_rfc):
         url = f"https://tools.ietf.org/html/rfc{num}"
-        if not [file for file in os.listdir() if
-                file.startswith(f"RFC {num}")]:
-            future = session.get(url, headers=random_header())
-            resp = future.result()
-            if resp.status_code == 200:
-                text = resp.text
-                write_to_file(num, text)
+        # check if rfc already exists in db
+        future = session.get(url, headers=random_header())
+        resp = future.result()
+        if resp.status_code == 200:
+            text = resp.text
+            write_to_db(num, text)
         else:
             print(f"RFC {num:04d} Exists.. Skipping..")
 
@@ -81,26 +73,21 @@ def iterate_over_rfcs(total_rfc):
         print(f"RFC {num:04d} DOES NOT EXIST")
 
 
-def write_to_file(num, text):
-    """Function that creates text files from the RFC website.
+def write_to_db(num, text):
+    number = int(num)
+    title = get_filename(text)
+    body = get_text(text)
+    category = get_categories(text)
+    bookmark = False
 
-    :argument num: takes the RFC number as part of the filename
-    :argument text: writes the response text from the webpage into the file.
-    """
     try:
-        filename = get_filename(text)
-        filename = cleanup_character_escapes(filename)
-        text = get_text(text)
+        with db.atomic():
+            Data.create(number=number, title=title, text=body,
+                        category=category,
+                        bookmark=bookmark)
 
-        with open(f'{filename}.txt', 'w') as fout:
-            # visual debugging only - remove category from filename.
-            fout.write(text)
-            print(f"RFC {num:04d} downloaded!")
-    except FileNotFoundError or FileExistsError as e:
-        logging.warning(f"{e} presented for {filename}")
-    except AttributeError as e:
-        logging.warning(f"{e} has caused an error.")
-        pass
+    except IntegrityError as e:
+        logging.error(f'Integrity Error: {e} Raised!')
 
 
 def get_categories(text):
@@ -162,6 +149,7 @@ def get_rfc_total():
 
 
 def check_folder_exists():
+    # keep if need boiler plate for later
     """Create the folder that stores all the RFC files if it does not exist."""
     folder = os.path.join(pathlib.Path.home(), 'Code/RFC list')
     try:
