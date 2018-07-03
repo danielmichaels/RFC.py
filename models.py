@@ -9,13 +9,13 @@ class BaseModel(Model):
 
 
 class Data(BaseModel):
-    number = IntegerField()
+    number = IntegerField(primary_key=True)
     title = CharField()
     text = CharField()
     category = CharField()
-    bookmark = BooleanField()
+    bookmark = BooleanField(default=False)
 
 
 def create_tables():
     with db:
-        db.create_tables(Data, safe=True)
+        db.create_tables([Data], safe=True)
