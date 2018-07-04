@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from time import time
 
+import asks
 import logging
 import os
 import pathlib
@@ -13,6 +14,7 @@ from requests_futures.sessions import FuturesSession
 
 from models import Data, db
 
+asks.init('trio')
 logging.basicConfig(level=logging.INFO)
 
 
@@ -20,8 +22,8 @@ def main():
     try:
         total_rfc = get_rfc_total()
         start = time()
-        # iterate_over_rfcs(total_rfc)
-        iterate_over_rfcs(total_rfc=25)  # manual debug only
+        iterate_over_rfcs(total_rfc)
+        # iterate_over_rfcs(total_rfc=55)  # manual debug only
         end = time()
         logging.info(f'This took: {end - start} to run!')
 
@@ -59,12 +61,14 @@ def iterate_over_rfcs(total_rfc):
 
     session = FuturesSession(max_workers=10)
     for num in range(1, total_rfc):
+        # for num in range(50, total_rfc):
         url = f"https://tools.ietf.org/html/rfc{num}"
         # check if rfc already exists in db
         future = session.get(url, headers=random_header())
         resp = future.result()
         if resp.status_code == 200:
             text = resp.text
+            logging.info(f'RFC{num} inserted')
             write_to_db(num, text)
         else:
             print(f"RFC {num:04d} Exists.. Skipping..")
@@ -74,13 +78,14 @@ def iterate_over_rfcs(total_rfc):
 
 
 def write_to_db(num, text):
-    number = int(num)
-    title = get_filename(text)
-    body = get_text(text)
-    category = get_categories(text)
-    bookmark = False
 
     try:
+        number = int(num)
+        title = get_filename(text)
+        body = get_text(text)
+        category = get_categories(text)
+        bookmark = False
+
         with db.atomic():
             Data.create(number=number, title=title, text=body,
                         category=category,
@@ -88,6 +93,10 @@ def write_to_db(num, text):
 
     except IntegrityError as e:
         logging.error(f'Integrity Error: {e} Raised!')
+    except AttributeError as e:
+        # maybe needs a time out takes ~ 5-7s + before raising error (rfc51)
+        logging.error(f'{e} hit at RFC {num}')
+        pass
 
 
 def get_categories(text):
