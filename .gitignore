@@ -187,3 +187,4 @@ fabric.properties
 # database specific
 *.db
 *.db-*
+/.gtm/
