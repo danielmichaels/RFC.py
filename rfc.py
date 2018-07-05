@@ -19,13 +19,11 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main():
+    start = time()
     try:
         total_rfc = get_rfc_total()
-        start = time()
         iterate_over_rfcs(total_rfc)
         # iterate_over_rfcs(total_rfc=55)  # manual debug only
-        end = time()
-        logging.info(f'This took: {end - start} to run!')
 
     except OSError:
         raise
@@ -35,6 +33,10 @@ def main():
 
     except KeyboardInterrupt:
         print('User exited using CTRL-C')
+
+    finally:
+        end = time()
+        logging.info(f'This took: {end - start} to run!')
 
 
 def random_header():
@@ -78,7 +80,6 @@ def iterate_over_rfcs(total_rfc):
 
 
 def write_to_db(num, text):
-
     try:
         number = int(num)
         title = get_filename(text)

@@ -14,8 +14,8 @@ class TestDB(unittest.TestCase):
         test_db.create_tables([Data])
         with test_db.atomic():
             Data.create(number=1918, title='Private network NAT',
-                        text='',
-                        category='', bookmark=False)
+                        text='test data',
+                        category='Testing', bookmark=False)
 
 
 
