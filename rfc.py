@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-from time import time
+
+import time
 
 import asks
 import logging
 import os
 import pathlib
 import requests
+import shutil
 from bs4 import BeautifulSoup
 from peewee import *
 from random import choice
@@ -19,7 +21,8 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main():
-    start = time()
+    start = time.time()
+    download_rfc_tar()
     try:
         total_rfc = get_rfc_total()
         iterate_over_rfcs(total_rfc)
@@ -35,7 +38,7 @@ def main():
         print('User exited using CTRL-C')
 
     finally:
-        end = time()
+        end = time.time()
         logging.info(f'This took: {end - start} to run!')
 
 
@@ -79,10 +82,24 @@ def iterate_over_rfcs(total_rfc):
         print(f"RFC {num:04d} DOES NOT EXIST")
 
 
+def download_rfc_tar():
+    """Download all RFC's from IETF in a tar.gz for offline sorting."""
+    URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
+    # Takes ~ 130s to DL on my connection
+    t1 = time.time()
+    r = requests.get(URL, stream=True)
+    if r.status_code == 200:
+        with open('test.tar.gz', 'wb') as f:
+            # replace test.tar.gz with ~/.rfc in future
+            r.raw.decode_content = True
+            shutil.copyfileobj(r.raw, f)
+        print(f'Time taken in seconds: {time.time() - t1}')
+
+
 def write_to_db(num, text):
     try:
         number = int(num)
-        title = get_filename(text)
+        title = get_title(text)
         body = get_text(text)
         category = get_categories(text)
         bookmark = False
@@ -120,7 +137,7 @@ def get_header(text):
     return header.lower()
 
 
-def get_filename(text):
+def get_title(text):
     """Parse's HTML title from each RFC and extracts it for consumption
     elsewhere. Takes response.text has argument. """
     soup = BeautifulSoup(text, 'lxml')
