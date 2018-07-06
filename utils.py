@@ -1,7 +1,9 @@
 import time
 
+import os
 import requests
 import shutil
+import tarfile
 from bs4 import BeautifulSoup
 from random import choice
 
@@ -9,15 +11,26 @@ from random import choice
 def download_rfc_tar():
     """Download all RFC's from IETF in a tar.gz for offline sorting."""
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
+    FILENAME = URL.split('/')[-1]
     # Takes ~ 130s to DL on my connection
     t1 = time.time()
     r = requests.get(URL, stream=True)
     if r.status_code == 200:
-        with open('test.tar.gz', 'wb') as f:
+        with open(FILENAME, 'wb') as f:
             # replace test.tar.gz with ~/.rfc in future
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
         print(f'Time taken in seconds: {time.time() - t1}')
+
+
+def uncompress_tar():
+    """Uncompress the downloaded tarball into the folder and then delete it."""
+    URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
+    FILENAME = URL.split('/')[-1]
+    location = os.path.join('.', FILENAME)
+    with tarfile.open(FILENAME) as tar:
+        tar.extractall(location)
+    os.remove(location)
 
 
 def get_categories(text):
