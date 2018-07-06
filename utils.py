@@ -1,11 +1,15 @@
 import time
 
+import logging
 import os
+import pathlib
 import requests
 import shutil
 import tarfile
 from bs4 import BeautifulSoup
 from random import choice
+
+logging.basicConfig(level=logging.INFO)
 
 
 def download_rfc_tar():
@@ -14,13 +18,13 @@ def download_rfc_tar():
     FILENAME = URL.split('/')[-1]
     # Takes ~ 130s to DL on my connection
     t1 = time.time()
-    r = requests.get(URL, stream=True)
+    r = requests.get(URL, stream=True, headers=random_header())
     if r.status_code == 200:
         with open(FILENAME, 'wb') as f:
             # replace test.tar.gz with ~/.rfc in future
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
-        print(f'Time taken in seconds: {time.time() - t1}')
+        logging.info(f'Time taken in seconds: {time.time() - t1}')
 
 
 def uncompress_tar():
@@ -72,6 +76,21 @@ def cleanup_character_escapes(text):
     """Remove / symbol to stop traversal errors when saving filenames."""
     text = text.replace('/', ' ')
     return text
+
+
+def check_folder_exists():
+    # keep if need boiler plate for later
+    """Create the folder that stores all the RFC files if it does not exist."""
+    folder = os.path.join(pathlib.Path.home(), 'Code/RFC list')
+    try:
+        if not os.path.exists(folder):
+            logging.info('Folder doesn\'t exist...')
+            os.makedirs(folder)
+            logging.info(f'Folder: {folder} created!')
+        else:
+            logging.info(f'{folder} already exists.')
+    except OSError:
+        raise
 
 
 def random_header():
