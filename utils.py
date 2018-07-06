@@ -31,10 +31,10 @@ def uncompress_tar():
     """Uncompress the downloaded tarball into the folder and then delete it."""
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
     FILENAME = URL.split('/')[-1]
-    location = os.path.join('.', FILENAME)
+    file_location = os.path.join('.', FILENAME)
     with tarfile.open(FILENAME) as tar:
-        tar.extractall(location)
-    os.remove(location)
+        tar.extractall('test_rfc/')
+    os.remove(file_location)
 
 
 def get_categories(text):
