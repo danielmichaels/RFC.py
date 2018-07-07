@@ -78,7 +78,7 @@ def printer(title: str, body: str):
 
 def less(data: bytes):
     """Display the RFC in terminal using unix's LESS program."""
-    process = subprocess.Popen(["less"], stdin=subprocess.PIPE)
+    process = subprocess.Popen(["less", "-rn"], stdin=subprocess.PIPE)
 
     try:
         process.stdin.write(data)
