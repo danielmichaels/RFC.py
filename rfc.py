@@ -6,6 +6,7 @@ import os
 from peewee import *
 
 from models import Data, db
+from utils import strip_extensions
 
 logging.basicConfig(level=logging.INFO)
 
@@ -32,20 +33,6 @@ def main():
         logging.info(f'This took: {end - start} to run!')
 
 
-def strip_extensions():
-    """Strips away all non txt files from directory listing.
-
-    :return clean_list: generator of files with unwanted items removed
-                        note: time for listcomp = 45s v genexp = 24s
-    """
-
-    _, _, files = next(os.walk('test_rfc/'))
-    print(type(files))
-    dirty_extensions = ['a.txt', 'rfc-index.txt', '.pdf', '.ps', '.ta']
-    clean_list = (x for x in files
-                  if not any(xs in x for xs in dirty_extensions))
-    print(type(clean_list))
-    return clean_list
 
 
 def write_to_db():

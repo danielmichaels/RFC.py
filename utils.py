@@ -93,6 +93,22 @@ def check_folder_exists():
         raise
 
 
+def strip_extensions():
+    """Strips away all non txt files from directory listing.
+
+    :return clean_list: generator of files with unwanted items removed
+                        note: time for listcomp = 45s v genexp = 24s
+    """
+
+    _, _, files = next(os.walk('test_rfc/'))
+    print(type(files))
+    dirty_extensions = ['a.txt', 'rfc-index.txt', '.pdf', '.ps', '.ta']
+    clean_list = (x for x in files
+                  if not any(xs in x for xs in dirty_extensions))
+    print(type(clean_list))
+    return clean_list
+
+
 def random_header():
     desktop_agents = [
         'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
