@@ -2,7 +2,6 @@ import time
 
 import logging
 import os
-import pathlib
 import requests
 import shutil
 import tarfile
@@ -11,6 +10,11 @@ from random import choice
 
 logging.basicConfig(level=logging.INFO)
 
+
+class Config:
+    STORAGE_PATH = 'test_rfc/'
+    URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
+    FILENAME = URL.split('/')[-1]
 
 def download_rfc_tar():
     """Download all RFC's from IETF in a tar.gz for offline sorting."""
@@ -78,21 +82,6 @@ def cleanup_character_escapes(text):
     return text
 
 
-def check_folder_exists():
-    # keep if need boiler plate for later
-    """Create the folder that stores all the RFC files if it does not exist."""
-    folder = os.path.join(pathlib.Path.home(), 'Code/RFC list')
-    try:
-        if not os.path.exists(folder):
-            logging.info('Folder doesn\'t exist...')
-            os.makedirs(folder)
-            logging.info(f'Folder: {folder} created!')
-        else:
-            logging.info(f'{folder} already exists.')
-    except OSError:
-        raise
-
-
 def strip_extensions():
     """Strips away all non txt files from directory listing.
 
@@ -101,13 +90,14 @@ def strip_extensions():
     """
 
     _, _, files = next(os.walk('test_rfc/'))
-    print(type(files))
     dirty_extensions = ['a.txt', 'rfc-index.txt', '.pdf', '.ps', '.ta']
     clean_list = (x for x in files
                   if not any(xs in x for xs in dirty_extensions))
-    print(type(clean_list))
     return clean_list
 
+
+def remove_rfc_files():
+    shutil.rmtree(Config.STORAGE_PATH)
 
 def random_header():
     desktop_agents = [

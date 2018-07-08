@@ -5,22 +5,22 @@ import logging
 import os
 from peewee import *
 
-from models import Data, db
-from utils import strip_extensions
+from cli import less
+from models import Data, db, create_tables
+from utils import strip_extensions, remove_rfc_files, download_rfc_tar, \
+    uncompress_tar, Config
 
 logging.basicConfig(level=logging.INFO)
-
-
-class Config:
-    STORAGE_PATH = 'test_rfc/'
-    URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
-    FILENAME = URL.split('/')[-1]
 
 
 def main():
     start = time.time()
     try:
+        download_rfc_tar()
+        uncompress_tar()
+        create_tables()
         write_to_db()
+        # read_body_from_db(8268)
 
     except OSError:
         raise
@@ -33,18 +33,16 @@ def main():
         logging.info(f'This took: {end - start} to run!')
 
 
-
-
 def write_to_db():
     """Write the contents of files to sqlite database."""
 
     for file in strip_extensions():
-        with open(os.path.join(Config.STORAGE_PATH, file), encoding='utf-8',
+        with open(os.path.join(Config.STORAGE_PATH, file),
                   errors='ignore') as f:
             f = f.read()
 
             try:
-                number = file.strip('.txt').strip('rfc').strip('.pdf')
+                number = file.strip('.txt').strip('rfc')
                 title = ''
                 body = f.strip()
                 category = ''
@@ -61,6 +59,17 @@ def write_to_db():
             except AttributeError or ValueError as e:
                 logging.error(f'{e}: hit at RFC {file}')
                 pass
+
+    print('Successfully finished importing all files to database.')
+    print('Now removing unnecessary files from disk....')
+    remove_rfc_files()
+    print('...Done!')
+
+
+def read_body_from_db(rfc):
+    select = Data.get_by_id(rfc).text
+    print(type(select))
+    return less(select.encode('utf-8'))
 
 
 if __name__ == '__main__':
