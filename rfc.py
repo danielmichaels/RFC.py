@@ -15,10 +15,10 @@ logging.basicConfig(level=logging.INFO)
 def main():
     start = time.time()
     try:
-        download_rfc_tar()
-        uncompress_tar()
-        create_tables()
-        write_to_db()
+        if not check_database():
+            create_tables()
+            write_to_db()
+        print('try block finished')
         # read_body_from_db(8268)
 
     except OSError:
