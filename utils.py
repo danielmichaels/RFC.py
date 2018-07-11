@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 class Config:
     STORAGE_PATH = 'test_rfc/'
+    DATABASE_PATH = 'database.db'
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
     FILENAME = URL.split('/')[-1]
 
@@ -24,11 +25,13 @@ def download_rfc_tar():
     t1 = time.time()
     r = requests.get(URL, stream=True, headers=random_header())
     if r.status_code == 200:
+        # add error checking
         with open(FILENAME, 'wb') as f:
             # replace test.tar.gz with ~/.rfc in future
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
-        logging.info(f'Time taken in seconds: {time.time() - t1}')
+        print("....\n..Download complete..")
+    logging.info(f'Time taken in seconds: {time.time() - t1}')
 
 
 def uncompress_tar():
@@ -36,9 +39,11 @@ def uncompress_tar():
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
     FILENAME = URL.split('/')[-1]
     file_location = os.path.join('.', FILENAME)
+    print("..uncompressing tar.gz...")
     with tarfile.open(FILENAME) as tar:
-        tar.extractall('test_rfc/')
+        tar.extractall(Config.STORAGE_PATH)
     os.remove(file_location)
+    print("..Done!")
 
 
 def get_categories(text):
@@ -98,6 +103,7 @@ def strip_extensions():
 
 def remove_rfc_files():
     shutil.rmtree(Config.STORAGE_PATH)
+
 
 def random_header():
     desktop_agents = [

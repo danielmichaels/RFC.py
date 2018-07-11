@@ -1,6 +1,8 @@
 from peewee import *
 
-db = SqliteDatabase('test.db', pragmas={'journal_mode': 'wal'})
+from utils import Config
+
+db = SqliteDatabase(Config.DATABASE_PATH, pragmas={'journal_mode': 'wal'})
 
 
 class BaseModel(Model):

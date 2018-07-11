@@ -7,8 +7,7 @@ from peewee import *
 
 from cli import less
 from models import Data, db, create_tables
-from utils import strip_extensions, remove_rfc_files, download_rfc_tar, \
-    uncompress_tar, Config
+from utils import strip_extensions, remove_rfc_files, Config, check_database
 
 logging.basicConfig(level=logging.INFO)
 
@@ -36,6 +35,7 @@ def main():
 def write_to_db():
     """Write the contents of files to sqlite database."""
 
+    print("..Beginning database writes..")
     for file in strip_extensions():
         with open(os.path.join(Config.STORAGE_PATH, file),
                   errors='ignore') as f:
