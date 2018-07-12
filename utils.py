@@ -9,7 +9,8 @@ logging.basicConfig(level=logging.INFO)
 
 class Config:
     STORAGE_PATH = 'test_rfc/'
-    DATABASE_PATH = 'database.db'
+    DATABASE = 'database.db'
+    DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
     FILENAME = URL.split('/')[-1]
 
