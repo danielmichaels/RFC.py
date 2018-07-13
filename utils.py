@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 import shutil
 from bs4 import BeautifulSoup
 from random import choice
@@ -16,17 +17,24 @@ class Config:
 
 
 def get_categories(text):
-    header = get_header(text)
+    """Parse through each text file searching for the IETF's categories.
+
+    :arg text from rfc txt file
+
+    :return any matched category, if not found or rfc not does not give a
+            category return "uncategorised".
+    """
+    header = text[:500]
     categories = [
         "Standards Track", "Informational", "Experimental", "Historic",
         "Best Current Practice", "Proposed Standard", "Internet Standard"
     ]
-    # link proposed and internet standard into Standards Track folder.
-    for category in categories:
-        if category.lower() in header:
-            return category
-        if category.lower() not in header:
-            return "Uncategorised"
+    match = [x for x in [re.findall(x.title(), header.title())
+                         for x in categories] if len(x) > 0]
+    try:
+        return match[0][0]
+    except IndexError:
+        return "Uncategorised"
 
 
 def get_header(text):
