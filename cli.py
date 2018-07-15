@@ -5,7 +5,7 @@ import logging
 import requests
 import subprocess
 
-from utils import get_title, get_text
+from utils import get_text
 
 logging.basicConfig(level=logging.INFO)
 
@@ -60,7 +60,7 @@ def get_rfc(rfc_number: str):
     resp = requests.get(url)
     if resp.status_code == 200:
         text = resp.text
-        title = get_title(text)
+        title = None
         body = get_text(text)
         return title, body
 

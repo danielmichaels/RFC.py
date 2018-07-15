@@ -43,12 +43,22 @@ def get_header(text):
     return header.lower()
 
 
-def get_title(text):
-    """Parse's HTML title from each RFC and extracts it for consumption
-    elsewhere. Takes response.text has argument. """
-    soup = BeautifulSoup(text, 'lxml')
-    title = soup.title.text
-    return title
+def get_title_list():
+    list_of_tiles = list()
+    with open(os.path.join(Config.STORAGE_PATH, 'rfc-index.txt'), 'r') as f:
+        f = f.read().strip()
+        search_regex = '^([\d{1,4}])([^.]*).'
+        result = re.finditer(search_regex, f, re.M)
+        for title in result:
+            list_of_tiles.append(title[0])
+    return list_of_tiles
+
+
+def map_title_from_list(number, title_list):
+    result = [title for title in title_list if number in title]
+    if result:
+        return result[0]
+    return None
 
 
 def get_text(text):

@@ -5,9 +5,9 @@ import logging
 import os
 from peewee import *
 
-from cli import less
-from models import Data, db, create_tables
-from utils import strip_extensions, remove_rfc_files, Config, check_database
+from models import Data, db
+from utils import strip_extensions, Config, get_categories, \
+    map_title_from_list, get_title_list
 
 logging.basicConfig(level=logging.INFO)
 
@@ -15,11 +15,12 @@ logging.basicConfig(level=logging.INFO)
 def main():
     start = time.time()
     try:
-        if not check_database():
-            create_tables()
-            write_to_db()
-        print('try block finished')
-        # read_body_from_db(8268)
+        # update.main()
+        # update.download_rfc_tar()
+        # update.uncompress_tar()
+        # create_tables()
+        write_to_db()
+        # test_headers()
 
     except OSError:
         raise
@@ -36,16 +37,17 @@ def write_to_db():
     """Write the contents of files to sqlite database."""
 
     print("..Beginning database writes..")
+    title_list = get_title_list()
     for file in strip_extensions():
         with open(os.path.join(Config.STORAGE_PATH, file),
                   errors='ignore') as f:
-            f = f.read()
+            f = f.read().strip()
 
             try:
                 number = file.strip('.txt').strip('rfc')
-                title = ''
-                body = f.strip()
-                category = ''
+                title = map_title_from_list(number, title_list)
+                body = f
+                category = get_categories(f)
                 bookmark = False
 
                 with db.atomic():
@@ -54,7 +56,7 @@ def write_to_db():
                                 bookmark=bookmark)
 
             except IntegrityError as e:
-                logging.error(f'Integrity Error: {e} Raised!')
+                logging.error(f'Integrity Error: {e} Raised at {number}')
                 pass
             except AttributeError or ValueError as e:
                 logging.error(f'{e}: hit at RFC {file}')
@@ -62,14 +64,14 @@ def write_to_db():
 
     print('Successfully finished importing all files to database.')
     print('Now removing unnecessary files from disk....')
-    remove_rfc_files()
+    # remove_rfc_files() # keep while testing
     print('...Done!')
 
 
-def read_body_from_db(rfc):
-    select = Data.get_by_id(rfc).text
-    print(type(select))
-    return less(select.encode('utf-8'))
+def test_headers():
+    with open('test_rfc/rfc-index.txt', 'r') as index:
+        index = index.read().strip()
+        pass  # here for manual testing
 
 
 if __name__ == '__main__':
