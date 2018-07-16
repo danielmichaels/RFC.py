@@ -12,7 +12,7 @@ import tarfile
 
 from models import create_tables
 from rfc import write_to_db
-from utils import Config, random_header
+from utils import Config
 
 
 def main():
@@ -44,7 +44,7 @@ def check_database():
 def download_rfc_tar():
     """Download all RFC's from IETF in a tar.gz for offline sorting."""
     t1 = time.time()
-    r = requests.get(Config.URL, stream=True, headers=random_header())
+    r = requests.get(Config.URL, stream=True)
     if r.status_code == 200:
         # add error checking
         with open(Config.FILENAME, 'wb') as f:

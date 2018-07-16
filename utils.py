@@ -3,7 +3,6 @@ import os
 import re
 import shutil
 from bs4 import BeautifulSoup
-from random import choice
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,12 +36,6 @@ def get_categories(text):
         return "Uncategorised"
 
 
-def get_header(text):
-    soup = BeautifulSoup(text, 'lxml')
-    header = soup.pre.next_element.strip()
-    return header.lower()
-
-
 def get_title_list():
     list_of_tiles = list()
     with open(os.path.join(Config.STORAGE_PATH, 'rfc-index.txt'), 'r') as f:
@@ -68,12 +61,6 @@ def get_text(text):
     return clean_text
 
 
-def cleanup_character_escapes(text):
-    """Remove / symbol to stop traversal errors when saving filenames."""
-    text = text.replace('/', ' ')
-    return text
-
-
 def strip_extensions():
     """Strips away all non txt files from directory listing.
 
@@ -90,19 +77,3 @@ def strip_extensions():
 
 def remove_rfc_files():
     shutil.rmtree(Config.STORAGE_PATH)
-
-
-def random_header():
-    desktop_agents = [
-        'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/602.2.14 (KHTML, like Gecko) Version/10.0.1 Safari/602.2.14',
-        'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36',
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.98 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36',
-        'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0']
-    return {'User-Agent': choice(desktop_agents),
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'}
