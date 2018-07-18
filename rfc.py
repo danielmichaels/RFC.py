@@ -7,7 +7,7 @@ import logging
 import os
 from peewee import *
 
-from models import Data, db
+from models import Data, db, DataIndex
 from utils import strip_extensions, Config, get_categories, \
     map_title_from_list, get_title_list
 
@@ -58,6 +58,8 @@ def write_to_db():
                     Data.create(number=number, title=title, text=body,
                                 category=category,
                                 bookmark=bookmark)
+                    DataIndex.create(rowid=number, title=title, text=body,
+                                     category=category)
 
             except IntegrityError as e:
                 logging.error(f'Integrity Error: {e} Raised at {number}')
@@ -122,6 +124,7 @@ def home_page():
         search_by_number()
     elif choice == '2':
         # search keyword
+        search_by_keyword()
         pass
     elif choice == '3':
         # search category
@@ -145,7 +148,20 @@ def search_by_number():
 
 
 def search_by_keyword():
-    pass
+    clear_screen()
+    phrase = input(
+        'enter keywords >> ')  # needs sanitization '/' causes error.
+    # Query the search index and join the corresponding Document
+    # object on each search result.
+    query = (Data
+             .select()
+             .join(
+        DataIndex,
+        on=(Data.number == DataIndex.rowid))
+             .where(DataIndex.match(phrase))
+             .order_by(DataIndex.bm25()))
+    for results in query:
+        print(f'Matches: {results.title}')
 
 
 def search_by_category():

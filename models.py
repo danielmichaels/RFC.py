@@ -1,8 +1,8 @@
-from peewee import *
+from playhouse.sqlite_ext import *
 
 from utils import Config
 
-db = SqliteDatabase(Config.DATABASE_PATH, pragmas={'journal_mode': 'wal'})
+db = SqliteExtDatabase(Config.DATABASE_PATH, pragmas={'journal_mode': 'wal'})
 
 
 class BaseModel(Model):
@@ -11,6 +11,7 @@ class BaseModel(Model):
 
 
 class Data(BaseModel):
+    """Base model used for rfc files."""
     number = IntegerField(primary_key=True)
     title = CharField()
     text = CharField()
@@ -18,6 +19,19 @@ class Data(BaseModel):
     bookmark = BooleanField(default=False)
 
 
+class DataIndex(FTS5Model):
+    """Virtual Table for Full Text Search of :class: Data."""
+    rowid = RowIDField()
+    title = SearchField()
+    text = SearchField(unindexed=False)
+    category = SearchField()
+
+    class Meta:
+        database = db
+        options = {
+            'tokenize': 'porter'}  # FTS5 includes more tokenizer options
+
+
 def create_tables():
     with db:
-        db.create_tables([Data], safe=True)
+        db.create_tables([Data, DataIndex], safe=True)
