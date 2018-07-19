@@ -128,6 +128,7 @@ def home_page():
         pass
     elif choice == '3':
         # search category
+        search_by_category()
         pass
     elif choice == '4':
         # search bookmarks
@@ -141,31 +142,43 @@ def home_page():
 def search_by_number():
     clear_screen()
     number = input('enter RFC by number: >> ')
-    print('number:', number)
+    if not number.isdigit():
+        print('[!!] Please enter rfc using numbers only i.e. 8305 [!!]')
+        print('Exiting..')
+        sys.exit(1)
     result = Data.get_by_id(number).text
-    # needs error checking index errors etc
     pager(result)
+    bookmarker()
 
 
 def search_by_keyword():
     clear_screen()
-    phrase = input(
-        'enter keywords >> ')  # needs sanitization '/' causes error.
-    # Query the search index and join the corresponding Document
-    # object on each search result.
-    query = (Data
-             .select()
-             .join(
-        DataIndex,
-        on=(Data.number == DataIndex.rowid))
-             .where(DataIndex.match(phrase))
-             .order_by(DataIndex.bm25()))
-    for results in query:
-        print(f'Matches: {results.title}')
+    phrase = input('enter keywords >> ')  # '/' causes error.
+    query = (Data.select().join(DataIndex,
+                                on=(Data.number == DataIndex.rowid)).where(
+        DataIndex.match(phrase)).order_by(DataIndex.bm25()))
+    try:
+        for results in query:
+            print(f'{Color.OKBLUE}Matches:{Color.END} {results.title}')
+        print()
+        choice = input('Enter rfc number you would like to view >> ')
+        result = Data.get_by_id(choice).text
+        pager(result)
+        bookmarker()
+    except OperationalError:
+        print('[!!] Database lookup error! [!!]')
+
+    # pager(f'Matches: {query.title}')
 
 
 def search_by_category():
-    pass
+    clear_screen()
+    print('TESTING ONLY')
+    phrase = input('enter category >> ')
+    query = (Data.select().join(DataIndex, on=(Data.number == DataIndex.rowid))
+             .where(DataIndex.match(phrase)).order_by(DataIndex.bm25()))
+    for result in query:
+        print(result.title, result.category)
 
 
 def bookmark_rfc():
@@ -173,10 +186,13 @@ def bookmark_rfc():
 
 
 def pager(data):
-    click.echo_via_pager(data)
-    input('Do you want to bookmark this? >> [y/N] ')
-    # input will need routing to bookmark in future.
-    # needs error checking such as 'isdigit' etc
+    return click.echo_via_pager(data)
+
+
+def bookmarker():
+    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
+    # if yes then bookmark, else pass
+    # something like peewee update data.bookmark = 1
     home_page()
 
 
