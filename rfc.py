@@ -5,7 +5,8 @@ import time
 import click
 import logging
 import os
-from peewee import PeeweeException, OperationalError, DoesNotExist
+from peewee import OperationalError, DoesNotExist, \
+    IntegrityError
 
 from models import Data, db, DataIndex
 from utils import strip_extensions, Config, get_categories, \
