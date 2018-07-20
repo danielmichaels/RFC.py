@@ -77,3 +77,8 @@ def strip_extensions():
 
 def remove_rfc_files():
     shutil.rmtree(Config.STORAGE_PATH)
+
+
+def santize_inputs(inputs):
+    regex = re.compile('[^a-zA-Z0-9]')
+    return regex.sub(' ', inputs)

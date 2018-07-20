@@ -10,7 +10,7 @@ from peewee import OperationalError, DoesNotExist, \
 
 from models import Data, db, DataIndex
 from utils import strip_extensions, Config, get_categories, \
-    map_title_from_list, get_title_list
+    map_title_from_list, get_title_list, santize_inputs
 
 logging.basicConfig(level=logging.INFO)
 
@@ -160,10 +160,9 @@ def search_by_number():
         print('Integer enter is too large')
 
 
-
 def search_by_keyword():
     clear_screen()
-    phrase = input('enter keywords >> ')  # '/' causes error.
+    phrase = santize_inputs(input('enter keywords >> '))  # '/' causes error.
     query = (Data.select().join(DataIndex,
                                 on=(Data.number == DataIndex.rowid)).where(
         DataIndex.match(phrase)).order_by(DataIndex.bm25()))
@@ -171,7 +170,7 @@ def search_by_keyword():
         for results in query:
             print(f'{Color.OKBLUE}Matches:{Color.END} {results.title}')
         print()
-        choice = input('Enter rfc number you would like to view >> ')
+        choice = input('Enter rfc number you would like to view >> ').isdigit()
         result = Data.get_by_id(choice).text
         pager(result)
         bookmarker()
