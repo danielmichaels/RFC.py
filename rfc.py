@@ -5,7 +5,7 @@ import time
 import click
 import logging
 import os
-from peewee import *
+from peewee import PeeweeException, OperationalError, DoesNotExist
 
 from models import Data, db, DataIndex
 from utils import strip_extensions, Config, get_categories, \
@@ -141,14 +141,23 @@ def home_page():
 
 def search_by_number():
     clear_screen()
-    number = input('enter RFC by number: >> ')
-    if not number.isdigit():
-        print('[!!] Please enter rfc using numbers only i.e. 8305 [!!]')
-        print('Exiting..')
-        sys.exit(1)
-    result = Data.get_by_id(number).text
-    pager(result)
-    bookmarker()
+    try:
+        number = input('enter RFC by number: >> ')
+        if not number.isdigit():
+            print('[!!] Please enter rfc using numbers only i.e. 8305 [!!]')
+            print('Exiting..')
+            sys.exit(1)
+        result = Data.get_by_id(number).text
+        # result = Data.get_or_none(number).text
+        pager(result)
+        bookmarker()
+
+    except DoesNotExist:
+        print(f'{Color.WARNING}[!!] Query not found! '
+              f'Please check the rfc number and try again [!!]{Color.END}')
+    except OverflowError:
+        print('Integer enter is too large')
+
 
 
 def search_by_keyword():
