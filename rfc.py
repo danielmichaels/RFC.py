@@ -14,6 +14,7 @@ from utils import strip_extensions, Config, get_categories, \
 
 logging.basicConfig(level=logging.INFO)
 
+prompt = "rfc.py ~# "
 
 def main():
     start = time.time()
@@ -98,7 +99,8 @@ class Color:
     LOGGING = '\33[34m'
 
 
-logo = Color.HEADER + """
+def logo():
+    print(Color.HEADER + """
   _____  ______ _____               
  |  __ \|  ____/ ____|              
  | |__) | |__ | |       _ __  _   _ 
@@ -108,37 +110,10 @@ logo = Color.HEADER + """
                        | |     __/ |
                        |_|    |___/ 
 
-                    """ + Color.END
-prompt = "rfc.py ~# "
+                    """ + Color.END)
 
 
-def home_page():
-    clear_screen()
-    print(logo + """
-    [1] -- Search by Number
-    [2] -- Search by Keyword
-    [3] -- Search through Bookmark
-    [99] Quit!
-    """)
-    choice = input(prompt)
-    if choice == '1':
-        clear_screen()
-        search_by_number()
-    elif choice == '2':
-        clear_screen()
-        search_by_keyword()
-        pass
-    elif choice == '3':
-        clear_screen()
-        pass
-    elif choice == '99':
-        sys.exit()
-    else:
-        print('[!!] Please Select Options [1,2 or 3] [!!]')
-        print('...exiting!')
-
-
-def search_by_number():
+def number():
     print(Color.HEADER + '''
   ______     __  _   _ _    _ __  __ ____  ______ _____  
  |  _ \ \   / / | \ | | |  | |  \/  |  _ \|  ____|  __ \ 
@@ -148,9 +123,44 @@ def search_by_number():
  |____/  |_|    |_| \_|\____/|_|  |_|____/|______|_|  \_\\
  
   ''' + Color.END)
+
+
+def home_page():
+    clear_screen()
+    logo()
+    print("""
+    [1] -- Search by Number
+    [2] -- Search by Keyword
+    [3] -- Search through Bookmark
+    
+    [q] or [Enter] - Quit!
+    """)
+    choice = input(prompt)
+    if choice == '1':
+        clear_screen()
+        number()
+        search_by_number()
+    elif choice == '2':
+        clear_screen()
+        search_by_keyword()
+        pass
+    elif choice == '3':
+        clear_screen()
+        pass
+    elif choice == 'q' or choice == '':
+        sys.exit()
+    else:
+        print('[!!] Please Select Options [1,2 or 3] [!!]')
+        print('...exiting!')
+
+
+def search_by_number():
     try:
-        print('[*] Enter RFC by number [8305] ')
+        print('[*] Enter RFC by number [8305]  [*]')
+        print('[*] Press [Enter] for Home Page [*]')
         number = input(f'{prompt}')
+        if number == '':
+            home_page()
         if not number.isdigit():
             print('[!!] Please enter rfc using numbers only i.e. 8305 [!!]')
             print('Exiting..')
@@ -187,11 +197,7 @@ def search_by_keyword():
                 f'{Color.OKBLUE}Matches:{Color.NOTICE} RFC {results.title[:5]}'
                 f'{Color.HEADER}- {results.title[5:]}{Color.END}')
         print()
-        choice = input('Enter rfc number you would like to view >> ').isdigit()
-        # if not choice
-        result = Data.get_by_id(choice).text
-        pager(result)
-        bookmarker()
+        search_by_number()
     except OperationalError:
         print('[!!] Database lookup error! [!!]')
 
