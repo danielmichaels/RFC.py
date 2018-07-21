@@ -10,7 +10,7 @@ from peewee import OperationalError, DoesNotExist, \
 
 from models import Data, db, DataIndex
 from utils import strip_extensions, Config, get_categories, \
-    map_title_from_list, get_title_list, santize_inputs
+    map_title_from_list, get_title_list, sanitize_inputs
 
 logging.basicConfig(level=logging.INFO)
 
@@ -99,12 +99,15 @@ class Color:
 
 
 logo = Color.HEADER + """
-          ____  _____ ____               
- |  _ \|  ___/ ___|  _ __  _   _ 
- | |_) | |_ | |     | '_ \| | | |
- |  _ <|  _|| |___ _| |_) | |_| |
- |_| \_\_|   \____(_) .__/ \__, |
-                    |_|    |___/ 
+  _____  ______ _____               
+ |  __ \|  ____/ ____|              
+ | |__) | |__ | |       _ __  _   _ 
+ |  _  /|  __|| |      | '_ \| | | |
+ | | \ \| |   | |____ _| |_) | |_| |
+ |_|  \_\_|    \_____(_) .__/ \__, |
+                       | |     __/ |
+                       |_|    |___/ 
+
                     """ + Color.END
 prompt = "rfc.py ~# "
 
@@ -114,42 +117,45 @@ def home_page():
     print(logo + """
     [1] -- Search by Number
     [2] -- Search by Keyword
-    [3] -- Search by Category
-    [4] -- Search through Bookmark
+    [3] -- Search through Bookmark
     [99] Quit!
     """)
     choice = input(prompt)
-    # early testing model
     if choice == '1':
-        # search num
+        clear_screen()
         search_by_number()
     elif choice == '2':
-        # search keyword
+        clear_screen()
         search_by_keyword()
         pass
     elif choice == '3':
-        # search category
-        search_by_category()
-        pass
-    elif choice == '4':
-        # search bookmarks
+        clear_screen()
         pass
     elif choice == '99':
         sys.exit()
-    # else:
-    #     choice
+    else:
+        print('[!!] Please Select Options [1,2 or 3] [!!]')
+        print('...exiting!')
 
 
 def search_by_number():
-    clear_screen()
+    print(Color.HEADER + '''
+  ______     __  _   _ _    _ __  __ ____  ______ _____  
+ |  _ \ \   / / | \ | | |  | |  \/  |  _ \|  ____|  __ \ 
+ | |_) \ \_/ /  |  \| | |  | | \  / | |_) | |__  | |__) |
+ |  _ < \   /   | . ` | |  | | |\/| |  _ <|  __| |  _  / 
+ | |_) | | |    | |\  | |__| | |  | | |_) | |____| | \ \ 
+ |____/  |_|    |_| \_|\____/|_|  |_|____/|______|_|  \_\
+ 
+  ''' + Color.END)
     try:
-        number = input('enter RFC by number: >> ')
+        print('[*] Enter RFC by number [8305] ')
+        number = input(f'{prompt}')
         if not number.isdigit():
             print('[!!] Please enter rfc using numbers only i.e. 8305 [!!]')
             print('Exiting..')
             sys.exit(1)
         result = Data.get_by_id(number).text
-        # result = Data.get_or_none(number).text
         pager(result)
         bookmarker()
 
@@ -161,14 +167,25 @@ def search_by_number():
 
 
 def search_by_keyword():
-    clear_screen()
-    phrase = santize_inputs(input('enter keywords >> '))  # '/' causes error.
+    print(Color.HEADER + '''
+  ______     __  _  __________     ___          ______  _____  _____  
+ |  _ \ \   / / | |/ /  ____\ \   / | \        / / __ \|  __ \|  __ \ 
+ | |_) \ \_/ /  | ' /| |__   \ \_/ / \ \  /\  / / |  | | |__) | |  | |
+ |  _ < \   /   |  < |  __|   \   /   \ \/  \/ /| |  | |  _  /| |  | |
+ | |_) | | |    | . \| |____   | |     \  /\  / | |__| | | \ \| |__| |
+ |____/  |_|    |_|\_\______|  |_|      \/  \/   \____/|_|  \_\_____/ 
+                                                                      
+    ''' + Color.END)
+    print('[*] Enter Keyword/s [http/2 hpack]')
+    phrase = sanitize_inputs(input(f'{prompt}'))
     query = (Data.select().join(DataIndex,
                                 on=(Data.number == DataIndex.rowid)).where(
         DataIndex.match(phrase)).order_by(DataIndex.bm25()))
     try:
         for results in query:
-            print(f'{Color.OKBLUE}Matches:{Color.END} {results.title}')
+            print(
+                f'{Color.OKBLUE}Matches:{Color.NOTICE} RFC {results.title[:5]}'
+                f'{Color.HEADER}- {results.title[5:]}{Color.END}')
         print()
         choice = input('Enter rfc number you would like to view >> ').isdigit()
         result = Data.get_by_id(choice).text
@@ -177,28 +194,21 @@ def search_by_keyword():
     except OperationalError:
         print('[!!] Database lookup error! [!!]')
 
-    # pager(f'Matches: {query.title}')
-
-
-def search_by_category():
-    clear_screen()
-    print('TESTING ONLY')
-    phrase = input('enter category >> ')
-    query = (Data.select().join(DataIndex, on=(Data.number == DataIndex.rowid))
-             .where(DataIndex.match(phrase)).order_by(DataIndex.bm25()))
-    for result in query:
-        print(result.title, result.category)
-
-
-def bookmark_rfc():
-    pass
-
 
 def pager(data):
     return click.echo_via_pager(data)
 
 
 def bookmarker():
+    print(Color.HEADER + '''
+  ______     __  ____   ____   ____  _  ____  __          _____  _  __
+ |  _ \ \   / / |  _ \ / __ \ / __ \| |/ /  \/  |   /\   |  __ \| |/ /
+ | |_) \ \_/ /  | |_) | |  | | |  | | ' /| \  / |  /  \  | |__) | ' / 
+ |  _ < \   /   |  _ <| |  | | |  | |  < | |\/| | / /\ \ |  _  /|  <  
+ | |_) | | |    | |_) | |__| | |__| | . \| |  | |/ ____ \| | \ \| . \ 
+ |____/  |_|    |____/ \____/ \____/|_|\_\_|  |_/_/    \_\_|  \_\_|\_\
+
+    ''' + Color.END)
     bookmark = input('Do you wish to bookmark this? [y/N] >> ')
     # if yes then bookmark, else pass
     # something like peewee update data.bookmark = 1
