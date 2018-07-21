@@ -188,6 +188,7 @@ def search_by_keyword():
                 f'{Color.HEADER}- {results.title[5:]}{Color.END}')
         print()
         choice = input('Enter rfc number you would like to view >> ').isdigit()
+        # if not choice
         result = Data.get_by_id(choice).text
         pager(result)
         bookmarker()
@@ -195,11 +196,14 @@ def search_by_keyword():
         print('[!!] Database lookup error! [!!]')
 
 
-def pager(data):
-    return click.echo_via_pager(data)
-
-
 def bookmarker():
+    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
+    # if yes then bookmark, else pass
+    # something like peewee update data.bookmark = 1
+    home_page()
+
+
+def search_bookmarks():
     print(Color.HEADER + '''
   ______     __  ____   ____   ____  _  ____  __          _____  _  __
  |  _ \ \   / / |  _ \ / __ \ / __ \| |/ /  \/  |   /\   |  __ \| |/ /
@@ -209,10 +213,11 @@ def bookmarker():
  |____/  |_|    |____/ \____/ \____/|_|\_\_|  |_/_/    \_\_|  \_\_|\_\\
 
     ''' + Color.END)
-    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
-    # if yes then bookmark, else pass
-    # something like peewee update data.bookmark = 1
-    home_page()
+    pass
+
+
+def pager(data):
+    return click.echo_via_pager(data)
 
 
 if __name__ == '__main__':
