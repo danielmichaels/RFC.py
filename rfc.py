@@ -10,11 +10,13 @@ from peewee import OperationalError, DoesNotExist, \
 
 from models import Data, db, DataIndex
 from utils import strip_extensions, Config, get_categories, \
-    map_title_from_list, get_title_list, sanitize_inputs
+    map_title_from_list, get_title_list, sanitize_inputs, read_config, \
+    check_last_update, clear_screen, number, logo, Color
 
 logging.basicConfig(level=logging.INFO)
 
 prompt = "rfc.py ~# "
+
 
 def main():
     start = time.time()
@@ -25,8 +27,9 @@ def main():
         # create_tables()
         # write_to_db()
         # test_headers()
-        home_page()
-
+        # home_page()
+        read_config()
+        check_last_update()
 
     except OSError:
         raise
@@ -80,49 +83,6 @@ def test_headers():
     with open('test_rfc/rfc-index.txt', 'r') as index:
         index = index.read().strip()
         pass  # here for manual testing
-
-
-def clear_screen():
-    os.system('clear')
-
-
-class Color:
-    HEADER = '\033[95m'
-    IMPORTANT = '\33[35m'
-    NOTICE = '\033[33m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    RED = '\033[91m'
-    END = '\033[0m'
-    UNDERLINE = '\033[4m'
-    LOGGING = '\33[34m'
-
-
-def logo():
-    print(Color.HEADER + """
-  _____  ______ _____               
- |  __ \|  ____/ ____|              
- | |__) | |__ | |       _ __  _   _ 
- |  _  /|  __|| |      | '_ \| | | |
- | | \ \| |   | |____ _| |_) | |_| |
- |_|  \_\_|    \_____(_) .__/ \__, |
-                       | |     __/ |
-                       |_|    |___/ 
-
-                    """ + Color.END)
-
-
-def number():
-    print(Color.HEADER + '''
-  ______     __  _   _ _    _ __  __ ____  ______ _____  
- |  _ \ \   / / | \ | | |  | |  \/  |  _ \|  ____|  __ \ 
- | |_) \ \_/ /  |  \| | |  | | \  / | |_) | |__  | |__) |
- |  _ < \   /   | . ` | |  | | |\/| |  _ <|  __| |  _  / 
- | |_) | | |    | |\  | |__| | |  | | |_) | |____| | \ \ 
- |____/  |_|    |_| \_|\____/|_|  |_|____/|______|_|  \_\\
- 
-  ''' + Color.END)
 
 
 def home_page():

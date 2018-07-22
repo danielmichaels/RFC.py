@@ -1,8 +1,10 @@
+import configparser
 import logging
 import os
 import re
 import shutil
 from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
 
 logging.basicConfig(level=logging.INFO)
 
@@ -13,6 +15,7 @@ class Config:
     DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
     FILENAME = URL.split('/')[-1]
+    CONFIG_FILE = 'rfc.cfg'
 
 
 def get_categories(text):
@@ -82,3 +85,89 @@ def remove_rfc_files():
 def sanitize_inputs(inputs):
     regex = re.compile('[^a-zA-Z0-9]')
     return regex.sub(' ', inputs)
+
+
+def create_config():
+    config = configparser.ConfigParser()
+    config.add_section("Settings")
+    config.set("Settings", "Database Name", f"{Config.DATABASE_PATH}")
+    now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f")
+    config.set("Settings", "Last Update", f"{now}")
+
+    with open(Config.CONFIG_FILE, 'w') as config_file:
+        config.write(config_file)
+
+
+def read_config():
+    if not os.path.exists(Config.CONFIG_FILE):
+        create_config()
+    config = configparser.ConfigParser()
+    config.read(Config.CONFIG_FILE)
+    return config
+
+
+def read_setting():
+    config = read_config()
+    value = config.get('Settings', 'Last Update')
+    return value
+
+
+def update_config():
+    config = read_config()
+    config.set('Settings', 'Last Update', f'{datetime.utcnow()}')
+    with open(Config.CONFIG_FILE, 'w') as config_file:
+        config.write(config_file)
+
+
+def check_last_update():
+    last_update = read_setting()
+    to_dt = datetime.strptime(last_update, "%Y-%m-%d %H:%M:%S.%f")
+    week = to_dt + timedelta(weeks=1)
+    print(week, to_dt)
+    ten_seconds = to_dt + timedelta(seconds=10)
+    if to_dt > ten_seconds:
+        # if to_dt > week:
+        print('update needed')
+
+
+def clear_screen():
+    os.system('clear')
+
+
+class Color:
+    HEADER = '\033[95m'
+    IMPORTANT = '\33[35m'
+    NOTICE = '\033[33m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    RED = '\033[91m'
+    END = '\033[0m'
+    UNDERLINE = '\033[4m'
+    LOGGING = '\33[34m'
+
+
+def logo():
+    print(Color.HEADER + """
+  _____  ______ _____               
+ |  __ \|  ____/ ____|              
+ | |__) | |__ | |       _ __  _   _ 
+ |  _  /|  __|| |      | '_ \| | | |
+ | | \ \| |   | |____ _| |_) | |_| |
+ |_|  \_\_|    \_____(_) .__/ \__, |
+                       | |     __/ |
+                       |_|    |___/ 
+
+                    """ + Color.END)
+
+
+def number():
+    print(Color.HEADER + '''
+  ______     __  _   _ _    _ __  __ ____  ______ _____  
+ |  _ \ \   / / | \ | | |  | |  \/  |  _ \|  ____|  __ \ 
+ | |_) \ \_/ /  |  \| | |  | | \  / | |_) | |__  | |__) |
+ |  _ < \   /   | . ` | |  | | |\/| |  _ <|  __| |  _  / 
+ | |_) | | |    | |\  | |__| | |  | | |_) | |____| | \ \ 
+ |____/  |_|    |_| \_|\____/|_|  |_|____/|______|_|  \_\\
+ 
+  ''' + Color.END)
