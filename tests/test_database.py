@@ -48,5 +48,13 @@ class TestDB(unittest.TestCase):
         pass
 
 
+# test search by number
+
+# test search by keyword
+
+# test search by category
+
+# test search by bookmark
+
 if __name__ == '__main__':
     unittest.main()

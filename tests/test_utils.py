@@ -4,10 +4,9 @@
 
 # test remove files
 
-# test search by number
 
-# test search by keyword
+# test create_config
 
-# test search by category
+# test read_config
 
-# test search by bookmark
+# test update_settings
