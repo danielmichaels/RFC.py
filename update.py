@@ -9,10 +9,12 @@ import os
 import requests
 import shutil
 import tarfile
+from peewee import IntegrityError
 
-from models import create_tables
-from rfc import write_to_db
-from utils import Config
+from models import create_tables, db, Data, DataIndex
+# from rfc import write_to_db
+from utils import Config, get_title_list, strip_extensions, \
+    map_title_from_list, get_categories
 
 
 def main():
@@ -62,6 +64,43 @@ def uncompress_tar():
         tar.extractall(Config.STORAGE_PATH)
     os.remove(file_location)
     print("..Done!")
+
+
+def write_to_db():
+    """Write the contents of files to sqlite database."""
+
+    print("..Beginning database writes..")
+    title_list = get_title_list()
+    for file in strip_extensions():
+        with open(os.path.join(Config.STORAGE_PATH, file),
+                  errors='ignore') as f:
+            f = f.read().strip()
+
+            try:
+                number = file.strip('.txt').strip('rfc')
+                title = map_title_from_list(number, title_list)
+                body = f
+                category = get_categories(f)
+                bookmark = False
+
+                with db.atomic():
+                    Data.create(number=number, title=title, text=body,
+                                category=category,
+                                bookmark=bookmark)
+                    DataIndex.create(rowid=number, title=title, text=body,
+                                     category=category)
+
+            except IntegrityError as e:
+                logging.error(f'Integrity Error: {e} Raised at {number}')
+                pass
+            except AttributeError or ValueError as e:
+                logging.error(f'{e}: hit at RFC {file}')
+                pass
+
+    print('Successfully finished importing all files to database.')
+    print('Now removing unnecessary files from disk....')
+    # remove_rfc_files() # keep while testing
+    print('...Done!')
 
 # if __name__ == '__main__':
 #     main()

@@ -1,8 +1,13 @@
+import os
+
 from playhouse.sqlite_ext import *
 
-from utils import Config
+# from utils import Config
 
-db = SqliteExtDatabase(Config.DATABASE_PATH, pragmas={'journal_mode': 'wal'})
+DATABASE = 'database.db'
+DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)
+
+db = SqliteExtDatabase(DATABASE_PATH, pragmas={'journal_mode': 'wal'})
 
 
 class BaseModel(Model):
@@ -32,6 +37,3 @@ class DataIndex(FTS5Model):
             'tokenize': 'porter'}  # FTS5 includes more tokenizer options
 
 
-def create_tables():
-    with db:
-        db.create_tables([Data, DataIndex], safe=True)
