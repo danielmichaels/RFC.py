@@ -131,10 +131,8 @@ def check_last_update():
     last_update = read_setting()
     to_dt = datetime.strptime(last_update, "%Y-%m-%d %H:%M:%S.%f")
     week = to_dt + timedelta(weeks=1)
-    ten_seconds = to_dt + timedelta(seconds=10)
-    # if to_dt > week:
-    print(to_dt - ten_seconds)
-    if to_dt > ten_seconds:
+    ten_seconds = to_dt + timedelta(seconds=30)
+    if datetime.utcnow() > ten_seconds:
         ask_user_to_update()
 
 
@@ -144,6 +142,7 @@ def ask_user_to_update():
     answer = input("rfc.py ~# [Y/n] ")
     if answer == 'y' or answer == 'Y' or answer == '':
         print("updating...")
+        update_config()
 
     else:
         print('Update aborted')
@@ -155,7 +154,7 @@ def first_run_update():
     try:
         # update.main()
         check_database()
-        # create_tables()
+        create_tables()
         write_to_db()
         download_rfc_tar()
         uncompress_tar()
