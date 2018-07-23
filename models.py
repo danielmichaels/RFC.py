@@ -28,12 +28,10 @@ class DataIndex(FTS5Model):
     """Virtual Table for Full Text Search of :class: Data."""
     rowid = RowIDField()
     title = SearchField()
-    text = SearchField(unindexed=False)
+    text = SearchField(unindexed=True)  # False returns too many hits in text
     category = SearchField()
 
     class Meta:
         database = db
         options = {
             'tokenize': 'porter'}  # FTS5 includes more tokenizer options
-
-
