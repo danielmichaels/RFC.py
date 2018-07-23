@@ -11,10 +11,9 @@ import shutil
 import tarfile
 from peewee import IntegrityError
 
-from models import create_tables, db, Data, DataIndex
-# from rfc import write_to_db
+from models import db, Data, DataIndex
 from utils import Config, get_title_list, strip_extensions, \
-    map_title_from_list, get_categories
+    map_title_from_list, get_categories, create_tables
 
 
 def main():

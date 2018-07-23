@@ -142,25 +142,110 @@ def ask_user_to_update():
     answer = input("rfc.py ~# [Y/n] ")
     if answer == 'y' or answer == 'Y' or answer == '':
         print("updating...")
+        # check_database()
+        download_rfc_tar()
+        uncompress_tar()
+        write_to_db()
         update_config()
-
-    else:
-        print('Update aborted')
 
 
 def first_run_update():
     print("[!] Database Not Found! [!]")
     print("The database will now be setup...")
     try:
-        # update.main()
-        check_database()
-        create_tables()
-        write_to_db()
         download_rfc_tar()
         uncompress_tar()
+        write_to_db()
         update_config()
     except OSError:
         raise
+
+
+def check_database():
+    """Check if database exists, if not download the RFC's and write them
+    to database, otherwise do nothing."""
+    print("Checking if database has been initialised...")
+    if Config.DATABASE_PATH:
+        print("Database exists")
+        print("Skipping update...")
+        return
+    print("Database not found...")
+    print("RFC.py will now download the files and load them into"
+          " the database")
+    print("This may take several minutes...")
+    download_rfc_tar()
+    uncompress_tar()
+
+
+def download_rfc_tar():
+    """Download all RFC's from IETF in a tar.gz for offline sorting."""
+    t1 = time.time()
+    r = requests.get(Config.URL, stream=True)
+    if r.status_code == 200:
+        # add error checking
+        with open(Config.FILENAME, 'wb') as f:
+            r.raw.decode_content = True
+            shutil.copyfileobj(r.raw, f)
+        print("..\n[*] Download complete [*]")
+    logging.info(f'Time taken in seconds: {time.time() - t1}')
+
+
+def uncompress_tar():
+    """Uncompress the downloaded tarball into the folder and then delete it."""
+    if os.path.exists(Config.STORAGE_PATH):
+        remove_rfc_files()
+    file_location = os.path.join('.', Config.FILENAME)
+    print("..uncompressing tar.gz...")
+    with tarfile.open(Config.FILENAME) as tar:
+        tar.extractall(Config.STORAGE_PATH)
+    os.remove(file_location)
+    print("..Done!")
+
+
+def write_to_db():
+    """Write the contents of files to sqlite database."""
+    create_tables()
+    print("..Beginning database writes..")
+    title_list = get_title_list()
+    for file in strip_extensions():
+        with open(os.path.join(Config.STORAGE_PATH, file),
+                  errors='ignore') as f:
+            f = f.read().strip()
+
+            try:
+                number = file.strip('.txt').strip('rfc')
+                title = map_title_from_list(number, title_list)
+                body = f
+                category = get_categories(f)
+                bookmark = False
+
+                with db.atomic():
+                    Data.create(number=number, title=title, text=body,
+                                category=category,
+                                bookmark=bookmark)
+                    DataIndex.create(rowid=number, title=title, text=body,
+                                     category=category)
+
+            except IntegrityError as e:
+                logging.error(f'Integrity Error: {e} Raised at {number}')
+                pass
+            except AttributeError or ValueError as e:
+                logging.error(f'{e}: hit at RFC {file}')
+                pass
+
+    print('Successfully finished importing all files to database.')
+    print('Now removing unnecessary files from disk....')
+    remove_rfc_files()  # keep while testing
+    print('...Done!')
+
+
+def update_bookmarks():
+    # if user wants to bookmark update that id's bookmark with a 1
+    pass
+
+def create_tables():
+    with db:
+        db.create_tables([Data, DataIndex], safe=True)
 
 
 def clear_screen():
@@ -204,84 +289,3 @@ def number():
  |____/  |_|    |_| \_|\____/|_|  |_|____/|______|_|  \_\\
  
   ''' + Color.END)
-
-
-def check_database():
-    """Check if database exists, if not download the RFC's and write them
-    to database, otherwise do nothing."""
-    print("Checking if database has been initialised...")
-    if Config.DATABASE_PATH:
-        print("Database exists")
-        print("Skipping update...")
-        return
-    print("Database not found...")
-    print("RFC.py will now download the files and load them into"
-          " the database")
-    print("This may take several minutes...")
-    download_rfc_tar()
-    uncompress_tar()
-
-
-def download_rfc_tar():
-    """Download all RFC's from IETF in a tar.gz for offline sorting."""
-    t1 = time.time()
-    r = requests.get(Config.URL, stream=True)
-    if r.status_code == 200:
-        # add error checking
-        with open(Config.FILENAME, 'wb') as f:
-            r.raw.decode_content = True
-            shutil.copyfileobj(r.raw, f)
-        print("..\n..Download complete..")
-    logging.info(f'Time taken in seconds: {time.time() - t1}')
-
-
-def uncompress_tar():
-    """Uncompress the downloaded tarball into the folder and then delete it."""
-    file_location = os.path.join('.', Config.FILENAME)
-    print("..uncompressing tar.gz...")
-    with tarfile.open(Config.FILENAME) as tar:
-        tar.extractall(Config.STORAGE_PATH)
-    os.remove(file_location)
-    print("..Done!")
-
-
-def write_to_db():
-    """Write the contents of files to sqlite database."""
-
-    print("..Beginning database writes..")
-    title_list = get_title_list()
-    for file in strip_extensions():
-        with open(os.path.join(Config.STORAGE_PATH, file),
-                  errors='ignore') as f:
-            f = f.read().strip()
-
-            try:
-                number = file.strip('.txt').strip('rfc')
-                title = map_title_from_list(number, title_list)
-                body = f
-                category = get_categories(f)
-                bookmark = False
-
-                with db.atomic():
-                    Data.create(number=number, title=title, text=body,
-                                category=category,
-                                bookmark=bookmark)
-                    DataIndex.create(rowid=number, title=title, text=body,
-                                     category=category)
-
-            except IntegrityError as e:
-                logging.error(f'Integrity Error: {e} Raised at {number}')
-                pass
-            except AttributeError or ValueError as e:
-                logging.error(f'{e}: hit at RFC {file}')
-                pass
-
-    print('Successfully finished importing all files to database.')
-    print('Now removing unnecessary files from disk....')
-    # remove_rfc_files() # keep while testing
-    print('...Done!')
-
-
-def create_tables():
-    with db:
-        db.create_tables([Data, DataIndex], safe=True)

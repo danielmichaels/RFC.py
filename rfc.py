@@ -19,11 +19,13 @@ def main():
     start = time.time()
     try:
 
-        # create_tables() # manual test only; update.py
+        # create_tables() # manual test only; update.pq
         # write_to_db() # man test only; update.py
+        clear_screen()
+        logo()
+        read_config()
+        check_last_update()
         home_page()
-        # read_config()
-        # check_last_update()
 
     except OSError:
         raise
@@ -38,8 +40,8 @@ def main():
 
 def home_page():
     clear_screen()
-    read_config()
-    check_last_update()
+    # read_config()
+    # check_last_update()
     logo()
     print("""
     [1] -- Search by Number
