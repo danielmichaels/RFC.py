@@ -1,7 +1,7 @@
 import unittest
 from playhouse.sqlite_ext import *
 
-from utils import *
+from models import Data, DataIndex
 
 test_db = SqliteExtDatabase('tests/test.db')
 
@@ -59,9 +59,23 @@ class TestDB(unittest.TestCase):
             DataIndex.create(rowid=number, title=title, text=text,
                              category=category)
 
+            expected_title = ['Hypertext Transfer Protocol 2 (HTTP/2)',
+                              "Address Allocation for Private Internets"]
+
+            expected_number = [1918, 7540]
+            actual_title = list()
+            actual_number = list()
+            for row in Data.select():
+                actual_title.append(row.title)
+                actual_number.append(row.number)
+            self.assertCountEqual(actual_title, expected_title)
+            self.assertCountEqual(actual_number, expected_number)
+            self.assertNotEqual(actual_number, [123, 345])
+
     def test_search_by_number(self):
         query = Data.select().where(Data.number == 7540)
-        self.assertTrue(query, '7540')
+        for result in query:
+            self.assertTrue(result, '7540')
 
     def test_search_by_keyword(self):
         phrase = 'HTTP'
@@ -70,17 +84,27 @@ class TestDB(unittest.TestCase):
             DataIndex.match(phrase)).order_by(DataIndex.bm25()))
         expected = 'Hypertext Transfer Protocol 2 (HTTP/2)'
         for result in query:
-            self.assertTrue(result.title, 'HTTP')
+            self.assertTrue(result.title, phrase)
             self.assertEqual(result.title, expected)
             self.assertNotEqual(result.title, 'HTTPS')
             self.assertNotEqual(result.title, 'DNS')
 
     # test search by bookmark
+
     def test_number_does_not_exist(self):
-        pass
+        query = Data.select().where(Data.number == 8305)
+        for result in query:
+            self.assertFalse(result, '7540')
 
     def test_keyword_search_returns_null(self):
-        pass
+        phrase = 'wolf'
+        query = (Data.select().join(DataIndex,
+                                    on=(Data.number == DataIndex.rowid)).where(
+            DataIndex.match(phrase)).order_by(DataIndex.bm25()))
+        for result in query:
+            print(result.title)
+            self.assertIsNone(result.title)
+            self.assertEqual(result.title, '')
 
 
 if __name__ == '__main__':
