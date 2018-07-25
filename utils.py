@@ -114,7 +114,7 @@ def read_config():
     return config
 
 
-def read_setting():
+def read_last_conf_update():
     config = read_config()
     value = config.get('Settings', 'Last Update')
     return value
@@ -128,7 +128,7 @@ def update_config():
 
 
 def check_last_update():
-    last_update = read_setting()
+    last_update = read_last_conf_update()
     to_dt = datetime.strptime(last_update, "%Y-%m-%d %H:%M:%S.%f")
     week = to_dt + timedelta(weeks=1)
     ten_seconds = to_dt + timedelta(seconds=30)
@@ -142,7 +142,6 @@ def ask_user_to_update():
     answer = input("rfc.py ~# [Y/n] ")
     if answer == 'y' or answer == 'Y' or answer == '':
         print("updating...")
-        # check_database()
         download_rfc_tar()
         uncompress_tar()
         write_to_db()
@@ -159,22 +158,6 @@ def first_run_update():
         update_config()
     except OSError:
         raise
-
-
-def check_database():
-    """Check if database exists, if not download the RFC's and write them
-    to database, otherwise do nothing."""
-    print("Checking if database has been initialised...")
-    if Config.DATABASE_PATH:
-        print("Database exists")
-        print("Skipping update...")
-        return
-    print("Database not found...")
-    print("RFC.py will now download the files and load them into"
-          " the database")
-    print("This may take several minutes...")
-    download_rfc_tar()
-    uncompress_tar()
 
 
 def download_rfc_tar():
@@ -242,6 +225,7 @@ def write_to_db():
 def update_bookmarks():
     # if user wants to bookmark update that id's bookmark with a 1
     pass
+
 
 def create_tables():
     with db:
