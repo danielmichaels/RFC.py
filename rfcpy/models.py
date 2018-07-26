@@ -2,7 +2,6 @@ import os
 
 from playhouse.sqlite_ext import *
 
-# from utils import Config
 
 DATABASE = 'database.db'
 DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)

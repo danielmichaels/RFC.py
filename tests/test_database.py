@@ -1,7 +1,7 @@
 import unittest
 from playhouse.sqlite_ext import *
 
-from models import Data, DataIndex
+from rfcpy.models import Data, DataIndex
 
 test_db = SqliteExtDatabase(':memory:')
 

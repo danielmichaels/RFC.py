@@ -2,14 +2,18 @@ import responses
 import unittest
 from requests import ConnectionError, ConnectTimeout
 
-from utils import *
+from rfcpy.utils import *
 
 
 class TestUtils(unittest.TestCase):
     """Testing utility functions."""
 
     def setUp(self):
-        conf = create_config()
+        test_folder = os.path.dirname(os.path.abspath(__file__))
+        if os.getcwd() != test_folder:
+            os.chdir(test_folder)
+            create_config()
+        create_config()
 
     def tearDown(self):
         path = os.path.join(os.getcwd())

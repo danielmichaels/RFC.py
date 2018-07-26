@@ -11,15 +11,16 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from peewee import IntegrityError
 
-from rfcpy.models import db, Data, DataIndex
+from .models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
 
 
 class Config:
+    ROOT_FOLDER = os.path.dirname(os.path.abspath(__file__))
     STORAGE_PATH = 'test_rfc/'
     DATABASE = 'database.db'
-    DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)
+    DATABASE_PATH = os.path.join(ROOT_FOLDER, DATABASE)
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
     FILENAME = URL.split('/')[-1]
     CONFIG_FILE = 'rfc.cfg'

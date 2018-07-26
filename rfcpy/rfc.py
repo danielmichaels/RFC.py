@@ -14,8 +14,8 @@ import click
 import logging
 from peewee import OperationalError, DoesNotExist
 
-from rfcpy.models import Data, DataIndex
-from rfcpy.utils import sanitize_inputs, read_config, \
+from .models import Data, DataIndex
+from .utils import sanitize_inputs, read_config, \
     check_last_update, clear_screen, number, logo, Color, keyword
 
 logging.basicConfig(level=logging.INFO)

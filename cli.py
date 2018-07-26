@@ -5,7 +5,7 @@ import logging
 import requests
 import subprocess
 
-from utils import get_text
+from rfcpy.utils import get_text
 
 logging.basicConfig(level=logging.INFO)
 
