@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from peewee import IntegrityError
 
-from models import db, Data, DataIndex
+from rfcpy.models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
 
@@ -273,3 +273,15 @@ def number():
  |____/  |_|    |_| \_|\____/|_|  |_|____/|______|_|  \_\\
  
   ''' + Color.END)
+
+
+def keyword():
+    print(Color.HEADER + '''
+  ______     __  _  __________     ___          ______  _____  _____  
+ |  _ \ \   / / | |/ /  ____\ \   / | \        / / __ \|  __ \|  __ \ 
+ | |_) \ \_/ /  | ' /| |__   \ \_/ / \ \  /\  / / |  | | |__) | |  | |
+ |  _ < \   /   |  < |  __|   \   /   \ \/  \/ /| |  | |  _  /| |  | |
+ | |_) | | |    | . \| |____   | |     \  /\  / | |__| | | \ \| |__| |
+ |____/  |_|    |_|\_\______|  |_|      \/  \/   \____/|_|  \_\_____/ 
+                                                                      
+    ''' + Color.END)

@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
+"""
+    RFC.py - A python module that downloads Request For Comments from the
+    Internet Engineering Task Force into a Sqlite database for offline reading.
+
+    Includes full text search, RFC number search and bookmarking capabilities
+    and weekly updates inline with the IETF policy of weekly additions.
+
+        Copyright (C) 2018, Daniel Michaels
+"""
 import sys
-import time
 
 import click
 import logging
 from peewee import OperationalError, DoesNotExist
 
-from models import Data, DataIndex
-from utils import sanitize_inputs, read_config, \
-    check_last_update, clear_screen, number, logo, Color
+from rfcpy.models import Data, DataIndex
+from rfcpy.utils import sanitize_inputs, read_config, \
+    check_last_update, clear_screen, number, logo, Color, keyword
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,11 +24,7 @@ prompt = "rfc.py ~# "
 
 
 def main():
-    start = time.time()
     try:
-
-        # create_tables() # manual test only; update.pq
-        # write_to_db() # man test only; update.py
         clear_screen()
         logo()
         read_config()
@@ -33,15 +37,16 @@ def main():
     except KeyboardInterrupt:
         print('User exited using CTRL-C')
 
-    finally:
-        end = time.time()
-        logging.info(f'This took: {end - start} to run!')
-
 
 def home_page():
+    """Interactive home page which user can use to select their type of search.
+
+    :options:   1. Search by RFC number
+                2. Search by keyword (using Sqlite FTS5)
+                3. Search bookmarks
+                [q] or [Enter] to quit application
+    """
     clear_screen()
-    # read_config()
-    # check_last_update()
     logo()
     print("""
     [1] -- Search by Number
@@ -70,9 +75,10 @@ def home_page():
 
 
 def search_by_number():
+    """User is to enter a valid RFC for retrieval from database."""
     try:
-        print('[*] Enter RFC by number [8305]  [*]')
-        print('[*] Press [Enter] for Home Page [*]')
+        print('[*] Enter RFC by number [eg. 8305]  [*]')
+        print('[*] OR Press [Enter] for Home Page  [*]')
         number = input(f'{prompt}')
         if number == '':
             home_page()
@@ -92,17 +98,10 @@ def search_by_number():
 
 
 def search_by_keyword():
-    print(Color.HEADER + '''
-  ______     __  _  __________     ___          ______  _____  _____  
- |  _ \ \   / / | |/ /  ____\ \   / | \        / / __ \|  __ \|  __ \ 
- | |_) \ \_/ /  | ' /| |__   \ \_/ / \ \  /\  / / |  | | |__) | |  | |
- |  _ < \   /   |  < |  __|   \   /   \ \/  \/ /| |  | |  _  /| |  | |
- | |_) | | |    | . \| |____   | |     \  /\  / | |__| | | \ \| |__| |
- |____/  |_|    |_|\_\______|  |_|      \/  \/   \____/|_|  \_\_____/ 
-                                                                      
-    ''' + Color.END)
+    keyword()
     print('[*] Enter Keyword/s [http/2 hpack]')
-    phrase = sanitize_inputs(input(f'{prompt}'))
+    phrase = input(f'{prompt}')
+    phrase = sanitize_inputs(phrase)
     query = (Data.select().join(DataIndex,
                                 on=(Data.number == DataIndex.rowid)).where(
         DataIndex.match(phrase)).order_by(DataIndex.bm25()))
