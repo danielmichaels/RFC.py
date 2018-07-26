@@ -1,5 +1,6 @@
 import responses
 import unittest
+from requests import ConnectionError, ConnectTimeout
 
 from utils import *
 
@@ -82,20 +83,19 @@ class TestUtils(unittest.TestCase):
         responses.add(responses.GET, Config.URL, json=None,
                       status=200, stream=True, content_type='application/json')
         resp = requests.get(Config.URL)
-        print(resp)
-        self.assertTrue(resp)
+        self.assertTrue(resp.status_code == 200)
 
     @responses.activate
-    def test_responses_api(self):
-        responses.add(responses.GET, 'https://danielms.site',
-                      json={'error': 'not found'}, status=404)
-        resp = requests.get('https://danielms.site')
-        print(resp)
-        self.assertTrue("error")
+    def test_connection_error(self):
+        responses.add(responses.GET, Config.URL, body=ConnectionError())
+        with self.assertRaises(ConnectionError):
+            requests.get(Config.URL)
 
     @responses.activate
-    def test_connection_error_on_download(self):
-        pass
+    def test_connection_timeout(self):
+        responses.add(responses.GET, Config.URL, body=ConnectTimeout())
+        with self.assertRaises(ConnectTimeout):
+            requests.get(Config.URL)
 
 
 if __name__ == '__main__':

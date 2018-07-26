@@ -3,7 +3,7 @@ from playhouse.sqlite_ext import *
 
 from models import Data, DataIndex
 
-test_db = SqliteExtDatabase('tests/test.db')
+test_db = SqliteExtDatabase(':memory:')
 
 
 class TestDB(unittest.TestCase):
