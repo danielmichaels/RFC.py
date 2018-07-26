@@ -16,7 +16,7 @@ from peewee import OperationalError, DoesNotExist
 
 from .models import Data, DataIndex
 from .utils import sanitize_inputs, read_config, \
-    check_last_update, clear_screen, number, logo, Color, keyword
+    check_last_update, clear_screen, number, logo, Color, keyword, bookmarks
 
 logging.basicConfig(level=logging.INFO)
 
@@ -46,6 +46,7 @@ def home_page():
                 3. Search bookmarks
                 [q] or [Enter] to quit application
     """
+
     clear_screen()
     logo()
     print("""
@@ -76,6 +77,7 @@ def home_page():
 
 def search_by_number():
     """User is to enter a valid RFC for retrieval from database."""
+
     try:
         print('[*] Enter RFC by number [eg. 8305]  [*]')
         print('[*] OR Press [Enter] for Home Page  [*]')
@@ -98,6 +100,12 @@ def search_by_number():
 
 
 def search_by_keyword():
+    """User can enter keywords to search for RFC's - only parses the title.
+
+    Prints all matches with RFC number - user can then enter which RFC number
+    to view, if any, or return to Home Page.
+    """
+
     keyword()
     print('[*] Enter Keyword/s [http/2 hpack]')
     phrase = input(f'{prompt}')
@@ -117,6 +125,7 @@ def search_by_keyword():
 
 
 def bookmarker():
+    """Give user the option to bookmark the last read RFC, defaults to No."""
     bookmark = input('Do you wish to bookmark this? [y/N] >> ')
     # if yes then bookmark, else pass
     # something like peewee update data.bookmark = 1
@@ -124,19 +133,16 @@ def bookmarker():
 
 
 def search_bookmarks():
-    print(Color.HEADER + '''
-  ______     __  ____   ____   ____  _  ____  __          _____  _  __
- |  _ \ \   / / |  _ \ / __ \ / __ \| |/ /  \/  |   /\   |  __ \| |/ /
- | |_) \ \_/ /  | |_) | |  | | |  | | ' /| \  / |  /  \  | |__) | ' / 
- |  _ < \   /   |  _ <| |  | | |  | |  < | |\/| | / /\ \ |  _  /|  <  
- | |_) | | |    | |_) | |__| | |__| | . \| |  | |/ ____ \| | \ \| . \ 
- |____/  |_|    |____/ \____/ \____/|_|\_\_|  |_/_/    \_\_|  \_\_|\_\\
-
-    ''' + Color.END)
+    """Print list of bookmarked RFC's"""
+    bookmarks()
     pass
 
 
 def pager(data):
+    """Utilise the safe work of Click.echo_via_pager to render RFC's using
+    system pager.
+    """
+
     return click.echo_via_pager(data)
 
 
