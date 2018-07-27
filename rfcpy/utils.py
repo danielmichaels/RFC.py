@@ -357,7 +357,7 @@ def logo():
                     """ + Color.END)
 
 
-def number():
+def print_by_number():
     print(Color.HEADER + '''
   ______     __  _   _ _    _ __  __ ____  ______ _____  
  |  _ \ \   / / | \ | | |  | |  \/  |  _ \|  ____|  __ \ 
@@ -369,7 +369,7 @@ def number():
   ''' + Color.END)
 
 
-def keyword():
+def print_by_keyword():
     print(Color.HEADER + '''
   ______     __  _  __________     ___          ______  _____  _____  
  |  _ \ \   / / | |/ /  ____\ \   / | \        / / __ \|  __ \|  __ \ 
@@ -381,7 +381,7 @@ def keyword():
     ''' + Color.END)
 
 
-def bookmarks():
+def print_by_bookmark():
     print(Color.HEADER + '''
   ______     __  ____   ____   ____  _  ____  __          _____  _  __
  |  _ \ \   / / |  _ \ / __ \ / __ \| |/ /  \/  |   /\   |  __ \| |/ /

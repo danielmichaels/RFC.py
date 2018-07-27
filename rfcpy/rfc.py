@@ -12,10 +12,12 @@ import sys
 
 import click
 import logging
-from models import Data, DataIndex
 from peewee import OperationalError, DoesNotExist
+
+from models import Data, DataIndex
 from utils import sanitize_inputs, read_config, \
-    check_last_update, clear_screen, number, logo, Color, keyword, bookmarks
+    check_last_update, clear_screen, print_by_number, logo, Color, \
+    print_by_keyword, print_by_bookmark
 
 logging.basicConfig(level=logging.INFO)
 
@@ -58,7 +60,7 @@ def home_page():
     choice = input(prompt)
     if choice == '1':
         clear_screen()
-        number()
+        print_by_number()
         search_by_number()
     elif choice == '2':
         clear_screen()
@@ -66,6 +68,7 @@ def home_page():
         pass
     elif choice == '3':
         clear_screen()
+        search_bookmarks()
         pass
     elif choice == 'q' or choice == '':
         sys.exit()
@@ -89,7 +92,7 @@ def search_by_number():
             sys.exit(1)
         result = Data.get_by_id(number).text
         pager(result)
-        bookmarker()
+        bookmarker(number)
 
     except DoesNotExist:
         print(f'{Color.WARNING}[!!] Query not found! '
@@ -105,7 +108,7 @@ def search_by_keyword():
     to view, if any, or return to Home Page.
     """
 
-    keyword()
+    print_by_keyword()
     print('[*] Enter Keyword/s [http/2 hpack]')
     phrase = input(f'{prompt}')
     phrase = sanitize_inputs(phrase)
@@ -123,20 +126,29 @@ def search_by_keyword():
         print('[!!] Database lookup error! [!!]')
 
 
-def bookmarker():
+def bookmarker(number):
     """Give user the option to bookmark the last read RFC, defaults to No."""
 
     bookmark = input('Do you wish to bookmark this? [y/N] >> ')
-    # if yes then bookmark, else pass
-    # something like peewee update data.bookmark = 1
+    if 'y' or 'Y' in bookmark:
+        print('YES', number)
+        update = Data(number=number, bookmark=1)
+        update.save()
     home_page()
 
 
 def search_bookmarks():
     """Print list of bookmarked RFC's"""
 
-    bookmarks()
-    pass
+    print_by_bookmark()
+    print("[*] All Bookmarked RFC's[*]")
+    print()
+    query = Data.select().where(Data.bookmark == 1)
+    for result in query:
+        print(
+            f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
+            f"{result.title[5:]}{Color.END}")
+    search_by_number()
 
 
 def pager(data):
