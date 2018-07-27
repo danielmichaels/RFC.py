@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from peewee import IntegrityError
 
-from models import db, Data, DataIndex
+from rfcpy.models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,7 +24,7 @@ class Config:
     ROOT_FOLDER = os.path.dirname(os.path.abspath(__file__))
     STORAGE_PATH = 'test_rfc/'
     DATABASE = 'database.db'
-    DATABASE_PATH = os.path.join(ROOT_FOLDER, DATABASE)
+    DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)
     URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
     FILENAME = URL.split('/')[-1]
     CONFIG_FILE = 'rfc.cfg'
@@ -146,10 +146,11 @@ def read_config():
     """Check if config file exists, if not create it and prompt user to
     download the database.
 
-    :retunr config: config file opened for reading."""
+    :return config: config file opened for reading."""
 
     if not os.path.exists(Config.CONFIG_FILE):
         create_config()
+    if not os.path.exists(Config.DATABASE):
         first_run_update()
     config = configparser.ConfigParser()
     config.read(Config.CONFIG_FILE)
