@@ -35,9 +35,8 @@ See [requirements.txt]() for more details of what dependencies are required.
 ## Demo
 
 <p align="center">
-    <img src="https://cdn.rawgit.com/danielmichaels/rfc.py/examples/basic_usage.svg">
+    <img src="https://cdn.rawgit.com/danielmichaels/rfc.py/examples/basic_usage.svg" alt="svg demo">
 </p>
-// not implemented yet //
 
 ## Basic Usage
 ----
@@ -62,8 +61,8 @@ The IETF releases new RFC's each Sunday. RFC.py will prompt the user once every 
 
 On the initial setup RFC.py will begin downloading the RFC's and write them to the database. This can take some time and is entirely dependant on the users connection.
 
-Total download ~ 175mb
-Database Size ~ 850mb
+- Total download ~ 175mb
+- Database Size ~ 850mb
 
 ## Running the tests
 
