@@ -219,14 +219,6 @@ def first_run_update():
             uncompress_tar()
             write_to_db()
             update_config()
-        print('[!] No config file found but database located [!]')
-        ask = input('Do you wish to update the database? [y/N] ')
-        if ask == 'y' or ask == 'Y' or ask == ' ':
-            print("updating...")
-            download_rfc_tar()
-            uncompress_tar()
-            write_to_db()
-            update_config()
 
     except OSError:
         raise

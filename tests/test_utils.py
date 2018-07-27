@@ -74,11 +74,15 @@ class TestUtils(unittest.TestCase):
         os.chdir(tests)
 
     def test_update_config(self):
+        # mock this call as it creates db
+        tests = os.getcwd()
+        os.chdir("..")
         update = update_config()
         read = read_last_conf_update()
         self.assertNotEqual(update, read)
         self.assertIn(datetime.strftime(datetime.utcnow(),
                                         "%Y-%m-%d %H:%M"), read)
+        os.chdir(tests)
 
     def test_sanitize_inputs(self):
         input1 = 'HTTP/2'
