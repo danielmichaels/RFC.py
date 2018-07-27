@@ -12,10 +12,9 @@ import sys
 
 import click
 import logging
+from models import Data, DataIndex
 from peewee import OperationalError, DoesNotExist
-
-from .models import Data, DataIndex
-from .utils import sanitize_inputs, read_config, \
+from utils import sanitize_inputs, read_config, \
     check_last_update, clear_screen, number, logo, Color, keyword, bookmarks
 
 logging.basicConfig(level=logging.INFO)
@@ -126,6 +125,7 @@ def search_by_keyword():
 
 def bookmarker():
     """Give user the option to bookmark the last read RFC, defaults to No."""
+
     bookmark = input('Do you wish to bookmark this? [y/N] >> ')
     # if yes then bookmark, else pass
     # something like peewee update data.bookmark = 1
@@ -134,6 +134,7 @@ def bookmarker():
 
 def search_bookmarks():
     """Print list of bookmarked RFC's"""
+
     bookmarks()
     pass
 
