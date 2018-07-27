@@ -1,3 +1,5 @@
+"""Utility functions and classes used in RFC.py"""
+
 import time
 
 import configparser
@@ -9,8 +11,9 @@ import shutil
 import tarfile
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from models import db, Data, DataIndex
 from peewee import IntegrityError
+
+from models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
 
@@ -237,7 +240,6 @@ def download_rfc_tar():
     t1 = time.time()
     r = requests.get(Config.URL, stream=True)
     if r.status_code == 200:
-        # add error checking
         with open(Config.FILENAME, 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
@@ -264,7 +266,17 @@ def write_to_db():
     function will run each time the database is updated. Relies on RFC number
     as the Primary Key to issue Unique Key Constraint which prohibits duplicate
     RFC's being written to DB.
+
+    Writes the following to models.Data (and its Virtual Table; DataIndex)
+        :arg number: RFC number taken from filename <rfc1918.txt>
+        :arg title: RFC Title taken from rfc-index.txt and mapped against number
+        :arg text: body of the document parsed for reading in terminal
+        :arg category: category type taken from document
+        :arg bookmark: boolean, if bookmarked returns 1 (True), default=0
+
+    Removes folder containing all text files post write.
     """
+
     create_tables()
     print("..Beginning database writes..")
     title_list = get_title_list()
