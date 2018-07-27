@@ -1,5 +1,5 @@
 import unittest
-from playhouse.sqlite_ext import *
+from playhouse.sqlite_ext import SqliteExtDatabase
 
 from rfcpy.models import Data, DataIndex
 

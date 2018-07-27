@@ -1,8 +1,13 @@
+import os
+import requests
 import responses
+import shutil
 import unittest
+from datetime import datetime
 from requests import ConnectionError, ConnectTimeout
 
-from rfcpy.utils import *
+from rfcpy.utils import Config, create_config, update_config, get_categories, \
+    read_last_conf_update, sanitize_inputs
 
 
 class TestUtils(unittest.TestCase):
