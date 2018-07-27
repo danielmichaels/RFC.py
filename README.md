@@ -1,96 +1,91 @@
+```
+  _____  ______ _____               
+ |  __ \|  ____/ ____|              
+ | |__) | |__ | |       _ __  _   _ 
+ |  _  /|  __|| |      | '_ \| | | |
+ | | \ \| |   | |____ _| |_) | |_| |
+ |_|  \_\_|    \_____(_) .__/ \__, |
+                       | |     __/ |
+                       |_|    |___/   v 1.0
+```
+
 # RFC.py
+-----
 
-A python client that downloads, stores and organises the IEEE's RFC's. This small
-application allows the user to store and retrieve all current RFC's easily. It 
-stores the RFC's in their relevant categories for easier retrieval. 
+A simple python client that offers users the ability to search for, read and bookmark RFC's from the Internet Engineering Task Force whilst offline.
 
-Futures:
 
-- Searching
-- Bookmarking
+## Installation
 
-## Getting Started
+Installation using pip is as simple as
 
-Download the source by cloning the repo.
+```pip install rfc.py```
 
-Pip support coming soon, and environment support too!
+Or clone this repo and run like so
 
-### Prerequisites
-
-Python 3.6+ only
-
-```
-Give examples
+```shell
+cd rfc
+python rfc.py
 ```
 
-### Installing
+**Python 3.6+ only**
 
-A step by step series of examples that tell you how to get a development env running
+See [requirements.txt]() for more details of what dependencies are required.
 
-Say what the step will be
+## Demo
 
-```
-Give the example
-```
+<p align="center">
+    <img src="https://cdn.rawgit.com/danielmichaels/rfc.py/examples/basic_usage.svg">
+</p>
+// not implemented yet //
 
-And repeat
+## Basic Usage
+----
 
-```
-until finished
-```
+RFC.py runs in an interactive mode. It consists of a Home Page and three search options.
 
-End with an example of getting some data out of the system or using it for a little demo
+>> Home Page
+>>  - Search by Number
+>>  - Search by Keyword
+>>  - Search by Bookmark
+
+**Search by Number**: The user can enter a valid RFC number
+
+**Search by Keyword**: The user can enter a series of keywords to search. The keywords are only check within the title of each RFC. 
+Each result will list matching RFC's with their title and number, the user can then enter in the number they wish to view.
+
+**Search by Bookmark**: If any bookmarks have been stored, this will output them to the terminal. The user can then view an RFC by entering its number.
+
+The IETF releases new RFC's each Sunday. RFC.py will prompt the user once every 7 days if they wish to download the new RFC's to the database. This is optional and by pressing [Enter] will default to No.
+
+### Setup Process
+
+On the initial setup RFC.py will begin downloading the RFC's and write them to the database. This can take some time and is entirely dependant on the users connection.
+
+Total download ~ 175mb
+Database Size ~ 850mb
 
 ## Running the tests
 
-Explain how to run the automated tests for this system
+1. cd into the rfc.py site package root directory.
+2. run ```python -m unittest -v```
 
-### Break down into end to end tests
+## Meta
 
-Explain what these tests test and why
+Daniel Michaels – https://www.danielms.site
 
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
+Distributed under the MIT license. See ``LICENSE`` for more information.
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+All requests, ideas or improvements are welcomed!
 
-## Versioning
+1. Fork it
+2. Create your feature branch (`git checkout -b feature/fooBar`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+## Inspired by..
 
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+My desire to read RFC's whilst flying without Wifi.
