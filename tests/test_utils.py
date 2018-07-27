@@ -64,10 +64,14 @@ class TestUtils(unittest.TestCase):
         self.assertTrue(os.path.exists(cfg))
 
     def test_read_config(self):
+        # need to mock this call
+        tests = os.getcwd()
+        os.chdir("..")
         reader = read_last_conf_update()
         self.assertIsInstance(reader, str)
         self.assertNotIsInstance(reader, int)
         self.assertNotIsInstance(reader, list)
+        os.chdir(tests)
 
     def test_update_config(self):
         update = update_config()
