@@ -130,7 +130,7 @@ def bookmarker(number):
     """Give user the option to bookmark the last read RFC, defaults to No."""
 
     bookmark = input('Do you wish to bookmark this? [y/N] >> ')
-    if 'y' or 'Y' in bookmark:
+    if bookmark == 'y' or bookmark == 'Y':
         print('YES', number)
         update = Data(number=number, bookmark=1)
         update.save()
