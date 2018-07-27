@@ -188,3 +188,6 @@ fabric.properties
 *.db
 *.db-*
 /.gtm/
+
+# config files
+*.cfg
