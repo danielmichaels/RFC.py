@@ -10,9 +10,8 @@ import requests
 import shutil
 import tarfile
 from datetime import datetime, timedelta
+from models import db, Data, DataIndex
 from peewee import IntegrityError
-
-from rfcpy.models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
 

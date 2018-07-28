@@ -14,7 +14,7 @@ from os import path
 from setuptools import setup, find_packages
 
 NAME = 'RFC.py'
-VERSION = '1.0'
+VERSION = '1.1'
 DESCRIPTION = "A simple python client that offers users the ability to search" \
               " for, read and bookmark RFC's from the Internet Engineering " \
               "Task Force whilst offline."

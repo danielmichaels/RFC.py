@@ -6,7 +6,7 @@
  | | \ \| |   | |____ _| |_) | |_| |
  |_|  \_\_|    \_____(_) .__/ \__, |
                        | |     __/ |
-                       |_|    |___/   v 1.0
+                       |_|    |___/   v 1.1
 ```
 
 # RFC.py
@@ -19,7 +19,7 @@ A simple python client that offers users the ability to search for, read and boo
 
 Installation using pip is as simple as
 
-```pip install rfc.py``` **COMING SOON**
+```pip install rfc.py``` **COMING SOON WITH TERM SUPPORT**
 
 Or clone this repo and run like so
 
