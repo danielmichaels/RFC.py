@@ -9,7 +9,6 @@ import re
 import requests
 import shutil
 import tarfile
-from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from peewee import IntegrityError
 
@@ -83,14 +82,6 @@ def map_title_from_list(number, title_list):
     if result:
         return result[0]
     return None
-
-
-def get_text(text):
-    """Get only text from the HTML body of each RFC page. Testing use only."""
-
-    soup = BeautifulSoup(text, 'lxml')
-    clean_text = soup.body.get_text()
-    return clean_text
 
 
 def strip_extensions():
