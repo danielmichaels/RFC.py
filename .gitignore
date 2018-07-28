@@ -191,3 +191,4 @@ fabric.properties
 
 # config files
 *.cfg
+!setup.cfg
