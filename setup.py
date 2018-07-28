@@ -28,8 +28,15 @@ REQUIRES_PYTHON = '>= Python 3.6'
 REQUIRED = [
     'requests',
     'click',
-    'peewee'
+    'peewee',
+    'responses'
 ]
+
+entry_points = {
+    'console_scripts': [
+        ['rfc = rfcpy.rfc:main']
+    ]
+}
 
 here = path.abspath(path.dirname(__file__))
 
@@ -47,6 +54,7 @@ setup(
     url=URL,
     download_url=DOWNLOAD_URL,
     install_requires=REQUIRED,
+    entry_points=entry_points,
     include_package_data=True,
     license='MIT',
     packages=find_packages(exclude=('tests')),
