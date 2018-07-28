@@ -10,8 +10,9 @@ import requests
 import shutil
 import tarfile
 from datetime import datetime, timedelta
-from models import db, Data, DataIndex
 from peewee import IntegrityError
+
+from rfcpy.models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
 
@@ -132,35 +133,38 @@ def create_config():
         config.write(config_file)
 
 
-def read_config():
+def read_config(testing=False):
     """Check if config file exists, if not create it and prompt user to
     download the database.
 
     :return config: config file opened for reading."""
 
+    config = configparser.ConfigParser()
+    config.read(Config.CONFIG_FILE)
+
+    if testing is True:
+        return config
     if not os.path.exists(Config.CONFIG_FILE):
         create_config()
     if not os.path.exists(Config.DATABASE):
         first_run_update()
-    config = configparser.ConfigParser()
-    config.read(Config.CONFIG_FILE)
     return config
 
 
-def read_last_conf_update():
+def read_last_conf_update(testing=False):
     """Reads the 'Last Update' value in config file."""
 
-    config = read_config()
+    config = read_config(testing)
     value = config.get('Settings', 'Last Update')
     return value
 
 
-def update_config():
+def update_config(testing=False):
     """Updates the Last Update value once a new database has been initialised
     after initial install or weekly update.
     """
 
-    config = read_config()
+    config = read_config(testing)
     config.set('Settings', 'Last Update', f'{datetime.utcnow()}')
     with open(Config.CONFIG_FILE, 'w') as config_file:
         config.write(config_file)

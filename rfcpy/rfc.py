@@ -12,9 +12,10 @@ import sys
 
 import click
 import logging
-from models import Data, DataIndex
 from peewee import OperationalError, DoesNotExist
-from utils import sanitize_inputs, read_config, \
+
+from rfcpy.models import Data, DataIndex
+from rfcpy.utils import sanitize_inputs, read_config, \
     check_last_update, clear_screen, print_by_number, logo, Color, \
     print_by_keyword, print_by_bookmark
 

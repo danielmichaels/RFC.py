@@ -65,24 +65,18 @@ class TestUtils(unittest.TestCase):
 
     def test_read_config(self):
         # need to mock this call
-        tests = os.getcwd()
-        os.chdir("..")
-        reader = read_last_conf_update()
+        reader = read_last_conf_update(testing=True)
         self.assertIsInstance(reader, str)
         self.assertNotIsInstance(reader, int)
         self.assertNotIsInstance(reader, list)
-        os.chdir(tests)
 
     def test_update_config(self):
         # mock this call as it creates db
-        tests = os.getcwd()
-        os.chdir("..")
-        update = update_config()
-        read = read_last_conf_update()
+        update = update_config(testing=True)
+        read = read_last_conf_update(testing=True)
         self.assertNotEqual(update, read)
         self.assertIn(datetime.strftime(datetime.utcnow(),
                                         "%Y-%m-%d %H:%M"), read)
-        os.chdir(tests)
 
     def test_sanitize_inputs(self):
         input1 = 'HTTP/2'
