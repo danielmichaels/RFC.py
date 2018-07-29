@@ -21,7 +21,7 @@ from rfcpy.utils import sanitize_inputs, read_config, \
 
 logging.basicConfig(level=logging.INFO)
 
-prompt = "rfc.py ~# "
+prompt = "RFC.py ~# "
 
 
 def main():
