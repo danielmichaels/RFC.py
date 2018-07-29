@@ -14,18 +14,15 @@ class TestUtils(unittest.TestCase):
     """Testing utility functions."""
 
     def setUp(self):
-        test_folder = os.path.dirname(os.path.abspath(__file__))
-        if os.getcwd() != test_folder:
-            os.chdir(test_folder)
-            create_config()
-        create_config()
+        if not os.path.exists(Config.TESTS_FOLDER):
+            os.mkdir(Config.TESTS_FOLDER)
+        create_config(testing=True)
 
     def tearDown(self):
-        path = os.path.join(os.getcwd())
-        os.remove(os.path.join(path, 'rfc.cfg'))
+        shutil.rmtree(Config.TESTS_FOLDER)
 
     def test_configs(self):
-        self.assertEqual(Config.CONFIG_FILE, 'rfc.cfg')
+        self.assertTrue(Config.CONFIG_FILE)
         self.assertEqual(Config.DATABASE, 'database.db')
 
     def test_categories(self):
@@ -60,18 +57,16 @@ class TestUtils(unittest.TestCase):
         self.assertFalse(os.path.exists(test_path))
 
     def test_create_config(self):
-        cfg = os.path.join(os.getcwd(), 'rfc.cfg')
+        cfg = os.path.join(Config.TESTS_FOLDER, 'rfc.cfg')
         self.assertTrue(os.path.exists(cfg))
 
     def test_read_config(self):
-        # need to mock this call
         reader = read_last_conf_update(testing=True)
         self.assertIsInstance(reader, str)
         self.assertNotIsInstance(reader, int)
         self.assertNotIsInstance(reader, list)
 
     def test_update_config(self):
-        # mock this call as it creates db
         update = update_config(testing=True)
         read = read_last_conf_update(testing=True)
         self.assertNotEqual(update, read)

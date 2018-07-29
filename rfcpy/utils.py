@@ -12,21 +12,10 @@ import tarfile
 from datetime import datetime, timedelta
 from peewee import IntegrityError
 
+from rfcpy.config import Config
 from rfcpy.models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
-
-
-class Config:
-    """Basic configuration settings."""
-
-    ROOT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    STORAGE_PATH = 'test_rfc/'
-    DATABASE = 'database.db'
-    DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)
-    URL = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
-    FILENAME = URL.split('/')[-1]
-    CONFIG_FILE = 'rfc.cfg'
 
 
 def get_categories(text):
@@ -90,7 +79,8 @@ def strip_extensions():
     :return clean_list: generator of files with unwanted items removed
     """
 
-    _, _, files = next(os.walk('test_rfc/'))
+    _, _, files = next(os.walk(Config.STORAGE_PATH))
+    # _, _, files = next(os.walk('test_rfc/'))
     dirty_extensions = ['a.txt', 'rfc-index.txt', '.pdf', '.ps', '.ta']
     clean_list = (x for x in files
                   if not any(xs in x for xs in dirty_extensions))
@@ -116,20 +106,29 @@ def sanitize_inputs(inputs):
     return regex.sub(' ', inputs)
 
 
-def create_config():
+def create_config(testing=False):
     """Create basic config file.
 
     options:    1. Database Name
                 2. Last Update
     """
 
+    if not os.path.exists(Config.ROOT_FOLDER):
+        os.mkdir(Config.ROOT_FOLDER)
     config = configparser.ConfigParser()
     config.add_section("Settings")
     config.set("Settings", "Database Name", f"{Config.DATABASE_PATH}")
     now = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M:%S.%f")
     config.set("Settings", "Last Update", f"{now}")
 
-    with open(Config.CONFIG_FILE, 'w') as config_file:
+    if testing is True:
+        with open(os.path.join(Config.TESTS_FOLDER, 'rfc.cfg'),
+                  'w') as config_file:
+            config.write(config_file)
+        return
+
+    with open(os.path.join(Config.ROOT_FOLDER, Config.CONFIG_FILE),
+              'w') as config_file:
         config.write(config_file)
 
 
@@ -143,10 +142,11 @@ def read_config(testing=False):
     config.read(Config.CONFIG_FILE)
 
     if testing is True:
+        config.read(os.path.join(Config.TESTS_FOLDER, 'rfc.cfg'))
         return config
     if not os.path.exists(Config.CONFIG_FILE):
         create_config()
-    if not os.path.exists(Config.DATABASE):
+    if not os.path.exists(Config.DATABASE_PATH):
         first_run_update()
     return config
 
@@ -166,6 +166,11 @@ def update_config(testing=False):
 
     config = read_config(testing)
     config.set('Settings', 'Last Update', f'{datetime.utcnow()}')
+    if testing is True:
+        with open(os.path.join(Config.TESTS_FOLDER, 'rfc.cfg'),
+                  'w') as config_file:
+            config.write(config_file)
+            return
     with open(Config.CONFIG_FILE, 'w') as config_file:
         config.write(config_file)
 
@@ -227,7 +232,8 @@ def download_rfc_tar():
     t1 = time.time()
     r = requests.get(Config.URL, stream=True)
     if r.status_code == 200:
-        with open(Config.FILENAME, 'wb') as f:
+        with open(
+                os.path.join(Config.ROOT_FOLDER, Config.FILENAME, 'wb')) as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
         print("..\n[*] Download complete [*]")
@@ -239,7 +245,7 @@ def uncompress_tar():
 
     if os.path.exists(Config.STORAGE_PATH):
         remove_rfc_files()
-    file_location = os.path.join('.', Config.FILENAME)
+    file_location = os.path.join(Config.STORAGE_PATH, Config.FILENAME)
     print("..uncompressing tar.gz...")
     with tarfile.open(Config.FILENAME) as tar:
         tar.extractall(Config.STORAGE_PATH)

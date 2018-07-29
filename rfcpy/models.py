@@ -6,14 +6,11 @@ Full Text Search (Sqlite FTS5). SQL managed by the PeeWee ORM.
 All credit: <https://github.com/coleifer/peewee>
 """
 
-import os
-
 from playhouse.sqlite_ext import *
 
-DATABASE = 'database.db'
-DATABASE_PATH = os.path.join(os.getcwd(), DATABASE)
+from rfcpy.config import Config
 
-db = SqliteExtDatabase(DATABASE_PATH, pragmas={'journal_mode': 'wal'})
+db = SqliteExtDatabase(Config.DATABASE_PATH, pragmas={'journal_mode': 'wal'})
 
 
 class BaseModel(Model):
