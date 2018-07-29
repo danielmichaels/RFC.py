@@ -170,7 +170,7 @@ def update_config(testing=False):
         with open(os.path.join(Config.TESTS_FOLDER, 'rfc.cfg'),
                   'w') as config_file:
             config.write(config_file)
-            return
+        return
     with open(Config.CONFIG_FILE, 'w') as config_file:
         config.write(config_file)
 
@@ -233,7 +233,7 @@ def download_rfc_tar():
     r = requests.get(Config.URL, stream=True)
     if r.status_code == 200:
         with open(
-                os.path.join(Config.ROOT_FOLDER, Config.FILENAME, 'wb')) as f:
+                os.path.join(Config.ROOT_FOLDER, Config.FILENAME), 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
         print("..\n[*] Download complete [*]")
@@ -245,10 +245,10 @@ def uncompress_tar():
 
     if os.path.exists(Config.STORAGE_PATH):
         remove_rfc_files()
-    file_location = os.path.join(Config.STORAGE_PATH, Config.FILENAME)
+    file_location = os.path.join(Config.ROOT_FOLDER, Config.FILENAME)
     print("..uncompressing tar.gz...")
-    with tarfile.open(Config.FILENAME) as tar:
-        tar.extractall(Config.STORAGE_PATH)
+    with tarfile.open(os.path.join(Config.ROOT_FOLDER, Config.FILENAME)) as f:
+        f.extractall(Config.STORAGE_PATH)
     os.remove(file_location)
     print("..Done!")
 
