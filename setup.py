@@ -9,8 +9,6 @@ $ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 $ twine upload -r pypi dist/*
 """
 
-from codecs import open
-from os import path
 from setuptools import setup, find_packages
 
 NAME = 'RFC.py'
@@ -38,16 +36,12 @@ entry_points = {
     ]
 }
 
-here = path.abspath(path.dirname(__file__))
-
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    long_description = f.read()
 
 setup(
     name=NAME,
     version=VERSION,
     description=DESCRIPTION,
-    long_description=long_description,
+    long_description=DESCRIPTION,
     long_description_content_type='text/markdown',
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
