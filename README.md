@@ -1,4 +1,3 @@
-
 ```
   _____  ______ _____               
  |  __ \|  ____/ ____|              
@@ -7,7 +6,7 @@
  | | \ \| |   | |____ _| |_) | |_| |
  |_|  \_\_|    \_____(_) .__/ \__, |
                        | |     __/ |
-                       |_|    |___/   v 1.1
+                       |_|    |___/   v 1.2
 ```
 
 # RFC.py
@@ -82,7 +81,7 @@ The root directory for database and configuration file is located on the users h
 
 If `RFC.py` is not installed via `pip install RFC.py` it can cloned and then be setup in the following ways:
 1. **The preferred method**: change directory to `RFC.py` and run `pip install --editable .` which will download all the appropriate dependencies. It can now be run from the CLI as `rfc` or `python rfc.py`. It is *highly advisable* that the user do this within a virtual environment. This [post](http://click.pocoo.org/dev/setuptools/) gives a good reason why this method is preferred.
-2. If you do not want to use `pip` then you can call the `rfc.py` module directly from the command line, but it may not be set correctly in the `PYTHONPATH`. If you see errors such as `ModuleNotFoundError: no module name 'rfcpy'` then you will need to set the path. Calling `export PYTHONPATH=.` from within the `RFC.py` folder will alleviate this error. More info at [Stack Overflow](https://stackoverflow.com/questions/338768/python-error-importerror-no-module-named).jk
+2. If you do not want to use `pip` then you can call the `rfc.py` module directly from the command line, but it may not be set correctly in the `PYTHONPATH`. If you see errors such as `ModuleNotFoundError: no module name 'rfcpy'` then you will need to set the path. Calling `export PYTHONPATH=.` from within the `RFC.py` folder will alleviate this error. More info at [Stack Overflow](https://stackoverflow.com/questions/338768/python-error-importerror-no-module-named).
 
 ## Meta
 
