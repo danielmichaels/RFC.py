@@ -23,7 +23,7 @@ class TestDB(unittest.TestCase):
             to as HTTP version 2 (HTTP/2).  HTTP/2 enables a more efficient 
             use of network"""
             category = "Standards Track"
-            bookmark = False
+            bookmark = True
             Data.create(number=number, title=title, text=text,
                         category=category, bookmark=bookmark)
             DataIndex.create(rowid=number, title=title, text=text,
@@ -89,7 +89,17 @@ class TestDB(unittest.TestCase):
             self.assertNotEqual(result.title, 'HTTPS')
             self.assertNotEqual(result.title, 'DNS')
 
-    # test search by bookmark
+    def test_search_by_bookmark(self):
+        query = (Data.select().where(Data.bookmark == 1))
+        for result in query:
+            self.assertEqual(result.number, 7540)
+            self.assertNotEqual(result.number, 8305)
+
+    def test_delete_bookmark(self):
+        exists = (Data.select().where(Data.bookmark == 1))
+        for result in exists:
+            pass
+
 
     def test_number_does_not_exist(self):
         query = Data.select().where(Data.number == 8305)
