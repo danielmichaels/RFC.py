@@ -97,8 +97,13 @@ class TestDB(unittest.TestCase):
 
     def test_delete_bookmark(self):
         exists = (Data.select().where(Data.bookmark == 1))
+        choice = 7540
         for result in exists:
-            pass
+            updates = Data.create(bookmark=False)
+            updates.save()
+            print(result.bookmark)
+
+
 
 
     def test_number_does_not_exist(self):
