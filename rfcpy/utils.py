@@ -1,17 +1,18 @@
 """Utility functions and classes used in RFC.py"""
 
-import time
-
 import configparser
 import logging
 import os
 import re
-import requests
 import shutil
 import tarfile
+import time
 from datetime import datetime, timedelta
+
+import requests
 from peewee import IntegrityError
 
+from rfc import home_page
 from rfcpy.config import Config
 from rfcpy.models import db, Data, DataIndex
 
@@ -104,6 +105,24 @@ def sanitize_inputs(inputs):
 
     regex = re.compile('[^a-zA-Z0-9]')
     return regex.sub(' ', inputs)
+
+
+def bookmarker(number):
+    """Give user the option to bookmark the last read RFC, defaults to No."""
+
+    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
+    if bookmark == 'y' or bookmark == 'Y':
+        print('YES', number)
+        update = Data(number=number, bookmark=1)
+        update.save()
+    home_page()
+
+
+def update_bookmarks():
+    """Updates the Bookmark row in database for selected RFC."""
+
+    # if user wants to bookmark update that id's bookmark with a 1
+    pass
 
 
 def create_config(testing=False):
@@ -303,13 +322,6 @@ def write_to_db():
     print('Now removing unnecessary files from disk....')
     remove_rfc_files()  # keep while testing
     print('...Done!')
-
-
-def update_bookmarks():
-    """Updates the Bookmark row in database for selected RFC."""
-
-    # if user wants to bookmark update that id's bookmark with a 1
-    pass
 
 
 def create_tables():

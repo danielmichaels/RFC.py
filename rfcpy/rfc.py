@@ -8,16 +8,16 @@
 
         Copyright (C) 2018, Daniel Michaels
 """
+import logging
 import sys
 
 import click
-import logging
 from peewee import OperationalError, DoesNotExist
 
 from rfcpy.models import Data, DataIndex
 from rfcpy.utils import sanitize_inputs, read_config, \
     check_last_update, clear_screen, print_by_number, logo, Color, \
-    print_by_keyword, print_by_bookmark
+    print_by_keyword, print_by_bookmark, bookmarker
 
 logging.basicConfig(level=logging.INFO)
 
@@ -65,11 +65,9 @@ def home_page():
     elif choice == '2':
         clear_screen()
         search_by_keyword()
-        pass
     elif choice == '3':
         clear_screen()
         search_bookmarks()
-        pass
     elif choice == 'q' or choice == '':
         sys.exit()
     else:
@@ -124,17 +122,6 @@ def search_by_keyword():
         search_by_number()
     except OperationalError:
         print('[!!] Database lookup error! [!!]')
-
-
-def bookmarker(number):
-    """Give user the option to bookmark the last read RFC, defaults to No."""
-
-    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
-    if bookmark == 'y' or bookmark == 'Y':
-        print('YES', number)
-        update = Data(number=number, bookmark=1)
-        update.save()
-    home_page()
 
 
 def search_bookmarks():
