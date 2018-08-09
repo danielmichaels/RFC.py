@@ -96,15 +96,16 @@ class TestDB(unittest.TestCase):
             self.assertNotEqual(result.number, 8305)
 
     def test_delete_bookmark(self):
-        exists = (Data.select().where(Data.bookmark == 1))
-        choice = 7540
+        exists = (
+            Data.select().where(Data.bookmark == 1 and Data.number == 7540))
         for result in exists:
-            updates = Data.create(bookmark=False)
-            updates.save()
-            print(result.bookmark)
-
-
-
+            self.assertEqual(result.bookmark, True)
+            Data.insert(title=result.title, text=result.text,
+                        number=result.number, category=result.category,
+                        bookmark=0).on_conflict('replace').execute()
+        new = (Data.select().where(Data.bookmark == 1 and Data.number == 7540))
+        for x in new:
+            self.assertEqual(x.bookmark, False)
 
     def test_number_does_not_exist(self):
         query = Data.select().where(Data.number == 8305)
