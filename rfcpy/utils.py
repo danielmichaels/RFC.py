@@ -81,7 +81,6 @@ def strip_extensions():
     """
 
     _, _, files = next(os.walk(Config.STORAGE_PATH))
-    # _, _, files = next(os.walk('test_rfc/'))
     dirty_extensions = ['a.txt', 'rfc-index.txt', '.pdf', '.ps', '.ta']
     clean_list = (x for x in files
                   if not any(xs in x for xs in dirty_extensions))
@@ -120,9 +119,16 @@ def bookmarker(number):
 
 def update_bookmarks():
     """Updates the Bookmark row in database for selected RFC."""
-
-    # if user wants to bookmark update that id's bookmark with a 1
-    pass
+    print("[!] Select bookmark to delete [!]")
+    print()
+    query = Data.select().where(Data.bookmark == 1)
+    for result in query:
+        print(f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
+              f"{result.title[5:]}{Color.END}")
+        choice = input("Enter Number to delete >>")
+        if choice.isdigit() == result.number:
+            update = Data(number=result.number, bookmark=0)
+            update.save()
 
 
 def create_config(testing=False):

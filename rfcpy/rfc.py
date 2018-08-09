@@ -17,7 +17,7 @@ from peewee import OperationalError, DoesNotExist
 from rfcpy.models import Data, DataIndex
 from rfcpy.utils import sanitize_inputs, read_config, \
     check_last_update, clear_screen, print_by_number, logo, Color, \
-    print_by_keyword, print_by_bookmark, bookmarker
+    print_by_keyword, print_by_bookmark, bookmarker, update_bookmarks
 
 logging.basicConfig(level=logging.INFO)
 
@@ -55,6 +55,7 @@ def home_page():
     [2] -- Search by Keyword
     [3] -- Search through Bookmark
     
+    [0] -- User Options
     [q] or [Enter] - Quit!
     """)
     choice = input(prompt)
@@ -68,6 +69,9 @@ def home_page():
     elif choice == '3':
         clear_screen()
         search_bookmarks()
+    elif choice == '0':
+        clear_screen()
+        settings_page()
     elif choice == 'q' or choice == '':
         sys.exit()
     else:
@@ -137,6 +141,21 @@ def search_bookmarks():
             f"{result.title[5:]}{Color.END}")
     search_by_number()
 
+
+def settings_page():
+    """Print list of user adjustable settings."""
+    print("""
+    [*] User Options
+    
+    [1] Delete bookmarks
+    
+    [Enter] Return to Home Page
+    """)
+    choice = input(prompt)
+    if choice == "1":
+        update_bookmarks()
+    elif choice == '':
+        home_page()
 
 def pager(data):
     """Utilise the safe work of Click.echo_via_pager to render RFC's using
