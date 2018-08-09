@@ -1,4 +1,5 @@
 import unittest
+
 from playhouse.sqlite_ext import SqliteExtDatabase
 
 from rfcpy.models import Data, DataIndex
@@ -94,6 +95,28 @@ class TestDB(unittest.TestCase):
         for result in query:
             self.assertEqual(result.number, 7540)
             self.assertNotEqual(result.number, 8305)
+
+    def test_bookmarker(self):
+        with test_db.atomic():
+            number = 6555
+            title = "Happy Eyeballs test"
+            text = "testing bookmark"
+            category = "Best Current Practice"
+            bookmark = False
+            Data.create(number=number, title=title, text=text,
+                        category=category, bookmark=bookmark)
+            DataIndex.create(rowid=number, title=title, text=text,
+                             category=category)
+
+        query = Data.select().where(Data.number == 6555)
+        for result in query:
+            self.assertEqual(result.bookmark, False)
+            Data.insert(title=result.title, text=result.text,
+                        number=result.number, category=result.category,
+                        bookmark=1).on_conflict('replace').execute()
+        new = Data.select().where(Data.number == 6555)
+        for result in new:
+            self.assertEqual(result.bookmark, True)
 
     def test_delete_bookmark(self):
         exists = (
