@@ -12,7 +12,6 @@ from datetime import datetime, timedelta
 import requests
 from peewee import IntegrityError
 
-from rfc import home_page
 from rfcpy.config import Config
 from rfcpy.models import db, Data, DataIndex
 
@@ -104,31 +103,6 @@ def sanitize_inputs(inputs):
 
     regex = re.compile('[^a-zA-Z0-9]')
     return regex.sub(' ', inputs)
-
-
-def bookmarker(number):
-    """Give user the option to bookmark the last read RFC, defaults to No."""
-
-    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
-    if bookmark == 'y' or bookmark == 'Y':
-        print('YES', number)
-        update = Data(number=number, bookmark=1)
-        update.save()
-    home_page()
-
-
-def update_bookmarks():
-    """Updates the Bookmark row in database for selected RFC."""
-    print("[!] Select bookmark to delete [!]")
-    print()
-    query = Data.select().where(Data.bookmark == 1)
-    for result in query:
-        print(f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
-              f"{result.title[5:]}{Color.END}")
-        choice = input("Enter Number to delete >>")
-        if choice.isdigit() == result.number:
-            update = Data(number=result.number, bookmark=0)
-            update.save()
 
 
 def create_config(testing=False):

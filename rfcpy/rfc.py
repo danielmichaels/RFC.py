@@ -17,7 +17,7 @@ from peewee import OperationalError, DoesNotExist
 from rfcpy.models import Data, DataIndex
 from rfcpy.utils import sanitize_inputs, read_config, \
     check_last_update, clear_screen, print_by_number, logo, Color, \
-    print_by_keyword, print_by_bookmark, bookmarker, update_bookmarks
+    print_by_keyword, print_by_bookmark
 
 logging.basicConfig(level=logging.INFO)
 
@@ -144,18 +144,55 @@ def search_bookmarks():
 
 def settings_page():
     """Print list of user adjustable settings."""
-    print("""
-    [*] User Options
-    
-    [1] Delete bookmarks
-    
-    [Enter] Return to Home Page
-    """)
+    print("[*] User Options\n")
+    print(f"{Color.NOTICE}[1] Delete bookmarks{Color.END}\n")
+    print("[Enter] Return to Home Page\n")
     choice = input(prompt)
     if choice == "1":
+        clear_screen()
         update_bookmarks()
     elif choice == '':
         home_page()
+
+
+def update_bookmarks():
+    """Updates the Bookmark row in database for selected RFC."""
+    print("[!] Select bookmark to delete [!]")
+    print()
+    query = Data.select().where(Data.bookmark == 1)
+    for result in query:
+        print(f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
+              f"{result.title[5:]}{Color.END}")
+    print()
+    print('[*] Enter Bookmark to delete by number [eg. 8305]  [*]')
+    print('[*] OR Press [Enter] for Home Page                 [*]')
+    choice = input(prompt)
+
+    if choice.isdigit():
+        update = Data(number=choice, bookmark=0)
+        update.save()
+        update_bookmarks()
+        print()
+    elif choice == '' or choice == "q":
+        home_page()
+    else:
+        print("\n[!] Please enter a valid number! [!]")
+        print()
+        update_bookmarks()
+
+    # home_page()
+
+
+def bookmarker(number):
+    """Give user the option to bookmark the last read RFC, defaults to No."""
+
+    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
+    if bookmark == 'y' or bookmark == 'Y':
+        print('YES', number)
+        update = Data(number=number, bookmark=1)
+        update.save()
+    home_page()
+
 
 def pager(data):
     """Utilise the safe work of Click.echo_via_pager to render RFC's using
