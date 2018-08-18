@@ -12,7 +12,7 @@ $ twine upload -r pypi dist/*
 from setuptools import setup, find_packages
 
 NAME = 'RFC.py'
-VERSION = '1.2'
+VERSION = '1.3'
 DESCRIPTION = "A simple python client that offers users the ability to search" \
               " for, read and bookmark RFC's from the Internet Engineering " \
               "Task Force whilst offline."
@@ -51,7 +51,7 @@ setup(
     entry_points=entry_points,
     include_package_data=True,
     license='MIT',
-    packages=find_packages(exclude=('tests')),
+    packages=find_packages(),
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

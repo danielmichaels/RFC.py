@@ -180,8 +180,6 @@ def update_bookmarks():
         print()
         update_bookmarks()
 
-    # home_page()
-
 
 def bookmarker(number):
     """Give user the option to bookmark the last read RFC, defaults to No."""

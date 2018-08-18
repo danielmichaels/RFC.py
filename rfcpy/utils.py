@@ -182,7 +182,6 @@ def check_last_update():
     last_update = read_last_conf_update()
     to_dt = datetime.strptime(last_update, "%Y-%m-%d %H:%M:%S.%f")
     week = to_dt + timedelta(weeks=1)
-    # ten_seconds = to_dt + timedelta(seconds=30) # manual testing
     if datetime.utcnow() > week:
         ask_user_to_update()
 
@@ -300,7 +299,7 @@ def write_to_db():
 
     print('Successfully finished importing all files to database.')
     print('Now removing unnecessary files from disk....')
-    remove_rfc_files()  # keep while testing
+    remove_rfc_files()
     print('...Done!')
 
 
