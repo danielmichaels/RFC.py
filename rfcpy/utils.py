@@ -9,6 +9,7 @@ import tarfile
 import time
 from datetime import datetime, timedelta
 
+import click
 import requests
 from peewee import IntegrityError
 
@@ -229,13 +230,34 @@ def download_rfc_tar():
 
     t1 = time.time()
     r = requests.get(Config.URL, stream=True)
+    dl_length = r.headers['Content-Length']
     if r.status_code == 200:
         with open(
-                os.path.join(Config.ROOT_FOLDER, Config.FILENAME), 'wb') as f:
+                os.path.join(Config.ROOT_FOLDER, Config.FILENAME), 'wb') as f, \
+                click.progressbar(length=int(dl_length)) as bar:
             r.raw.decode_content = True
-            shutil.copyfileobj(r.raw, f)
+            for chunk in r.iter_content(1024):
+                f.write(chunk)  # works
+                # shutil.copyfileobj(r.raw, f) # wont work at all
+                # copyfileobject(r.raw, f, bar.update()) # can work w callback
+                bar.update(len(chunk))
+
         print("..\n[*] Download complete [*]")
     logging.info(f'Time taken in seconds: {time.time() - t1}')
+
+
+def copyfileobject(src, dst, callback, length=16 * 1024):
+    """Utility of shutil.copyfilobj with support for callback into a progress
+    bar function.
+    """
+    copied = 0
+    while True:
+        buf = src.read(length)
+        if not buf:
+            break
+        dst.write(buf)
+        copied += len(buf)
+        callback(copied)  # compare with filesize
 
 
 def uncompress_tar():
