@@ -224,8 +224,7 @@ def first_run_update():
 
 def download_rfc_tar():
     """Download all RFC's from IETF in a tar.gz for offline sorting.
-
-    File is > 175mb compressed.
+    Download progress is tracked via click.progressbar.
     """
 
     t1 = time.time()
@@ -237,27 +236,11 @@ def download_rfc_tar():
                 click.progressbar(length=int(dl_length)) as bar:
             r.raw.decode_content = True
             for chunk in r.iter_content(1024):
-                f.write(chunk)  # works
-                # shutil.copyfileobj(r.raw, f) # wont work at all
-                # copyfileobject(r.raw, f, bar.update()) # can work w callback
+                f.write(chunk)
                 bar.update(len(chunk))
 
         print("..\n[*] Download complete [*]")
     logging.info(f'Time taken in seconds: {time.time() - t1}')
-
-
-def copyfileobject(src, dst, callback, length=16 * 1024):
-    """Utility of shutil.copyfilobj with support for callback into a progress
-    bar function.
-    """
-    copied = 0
-    while True:
-        buf = src.read(length)
-        if not buf:
-            break
-        dst.write(buf)
-        copied += len(buf)
-        callback(copied)  # compare with filesize
 
 
 def uncompress_tar():
