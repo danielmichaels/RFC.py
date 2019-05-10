@@ -29,11 +29,19 @@ def get_categories(text):
 
     header = text[:500]
     categories = [
-        "Standards Track", "Informational", "Experimental", "Historic",
-        "Best Current Practice", "Proposed Standard", "Internet Standard"
+        "Standards Track",
+        "Informational",
+        "Experimental",
+        "Historic",
+        "Best Current Practice",
+        "Proposed Standard",
+        "Internet Standard",
     ]
-    match = [x for x in [re.findall(x.title(), header.title())
-                         for x in categories] if len(x) > 0]
+    match = [
+        x
+        for x in [re.findall(x.title(), header.title()) for x in categories]
+        if len(x) > 0
+    ]
     try:
         return match[0][0]
     except IndexError:
@@ -48,9 +56,9 @@ def get_title_list():
     """
 
     list_of_titles = list()
-    with open(os.path.join(Config.STORAGE_PATH, 'rfc-index.txt'), 'r') as f:
+    with open(os.path.join(Config.STORAGE_PATH, "rfc-index.txt"), "r") as f:
         f = f.read().strip()
-        search_regex = '^([\d{1,4}])([^.]*).'
+        search_regex = "^([\d{1,4}])([^.]*)."
         result = re.finditer(search_regex, f, re.M)
         for title in result:
             list_of_titles.append(title[0])
@@ -80,9 +88,8 @@ def strip_extensions():
     """
 
     _, _, files = next(os.walk(Config.STORAGE_PATH))
-    dirty_extensions = ['a.txt', 'rfc-index.txt', '.pdf', '.ps', '.ta']
-    clean_list = (x for x in files
-                  if not any(xs in x for xs in dirty_extensions))
+    dirty_extensions = ["a.txt", "rfc-index.txt", ".pdf", ".ps", ".ta"]
+    clean_list = (x for x in files if not any(xs in x for xs in dirty_extensions))
     return clean_list
 
 
@@ -101,8 +108,8 @@ def sanitize_inputs(inputs):
     :return regex: replace any non-approved chars with ' '.
     """
 
-    regex = re.compile('[^a-zA-Z0-9]')
-    return regex.sub(' ', inputs)
+    regex = re.compile("[^a-zA-Z0-9]")
+    return regex.sub(" ", inputs)
 
 
 def create_config(testing=False):
@@ -121,13 +128,11 @@ def create_config(testing=False):
     config.set("Settings", "Last Update", f"{now}")
 
     if testing is True:
-        with open(os.path.join(Config.TESTS_FOLDER, 'rfc.cfg'),
-                  'w') as config_file:
+        with open(os.path.join(Config.TESTS_FOLDER, "rfc.cfg"), "w") as config_file:
             config.write(config_file)
         return
 
-    with open(os.path.join(Config.ROOT_FOLDER, Config.CONFIG_FILE),
-              'w') as config_file:
+    with open(os.path.join(Config.ROOT_FOLDER, Config.CONFIG_FILE), "w") as config_file:
         config.write(config_file)
 
 
@@ -141,7 +146,7 @@ def read_config(testing=False):
     config.read(Config.CONFIG_FILE)
 
     if testing is True:
-        config.read(os.path.join(Config.TESTS_FOLDER, 'rfc.cfg'))
+        config.read(os.path.join(Config.TESTS_FOLDER, "rfc.cfg"))
         return config
     if not os.path.exists(Config.CONFIG_FILE):
         create_config()
@@ -154,7 +159,7 @@ def read_last_conf_update(testing=False):
     """Reads the 'Last Update' value in config file."""
 
     config = read_config(testing)
-    value = config.get('Settings', 'Last Update')
+    value = config.get("Settings", "Last Update")
     return value
 
 
@@ -164,13 +169,12 @@ def update_config(testing=False):
     """
 
     config = read_config(testing)
-    config.set('Settings', 'Last Update', f'{datetime.utcnow()}')
+    config.set("Settings", "Last Update", f"{datetime.utcnow()}")
     if testing is True:
-        with open(os.path.join(Config.TESTS_FOLDER, 'rfc.cfg'),
-                  'w') as config_file:
+        with open(os.path.join(Config.TESTS_FOLDER, "rfc.cfg"), "w") as config_file:
             config.write(config_file)
         return
-    with open(Config.CONFIG_FILE, 'w') as config_file:
+    with open(Config.CONFIG_FILE, "w") as config_file:
         config.write(config_file)
 
 
@@ -192,7 +196,7 @@ def ask_user_to_update():
     print("[!] RFC's are updated weekly [!]")
     print("[!] Do you wish to check for updates?")
     answer = input("rfc.py ~# [Y/n] ")
-    if answer == 'y' or answer == 'Y' or answer == '':
+    if answer == "y" or answer == "Y" or answer == "":
         print("updating...")
         download_rfc_tar()
         uncompress_tar()
@@ -230,12 +234,11 @@ def download_rfc_tar():
     t1 = time.time()
     r = requests.get(Config.URL, stream=True)
     if r.status_code == 200:
-        with open(
-                os.path.join(Config.ROOT_FOLDER, Config.FILENAME), 'wb') as f:
+        with open(os.path.join(Config.ROOT_FOLDER, Config.FILENAME), "wb") as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
         print("..\n[*] Download complete [*]")
-    logging.info(f'Time taken in seconds: {time.time() - t1}')
+    logging.info(f"Time taken in seconds: {time.time() - t1}")
 
 
 def uncompress_tar():
@@ -272,35 +275,39 @@ def write_to_db():
     print("..Beginning database writes..")
     title_list = get_title_list()
     for file in strip_extensions():
-        with open(os.path.join(Config.STORAGE_PATH, file),
-                  errors='ignore') as f:
+        with open(os.path.join(Config.STORAGE_PATH, file), errors="ignore") as f:
             f = f.read().strip()
 
             try:
-                number = file.strip('.txt').strip('rfc')
+                number = file.strip(".txt").strip("rfc")
                 title = map_title_from_list(number, title_list)
                 body = f
                 category = get_categories(f)
                 bookmark = False
 
                 with db.atomic():
-                    Data.create(number=number, title=title, text=body,
-                                category=category,
-                                bookmark=bookmark)
-                    DataIndex.create(rowid=number, title=title, text=body,
-                                     category=category)
+                    Data.create(
+                        number=number,
+                        title=title,
+                        text=body,
+                        category=category,
+                        bookmark=bookmark,
+                    )
+                    DataIndex.create(
+                        rowid=number, title=title, text=body, category=category
+                    )
 
             except IntegrityError as e:
-                logging.error(f'Integrity Error: {e} Raised at {number}')
+                logging.error(f"Integrity Error: {e} Raised at {number}")
                 pass
             except AttributeError or ValueError as e:
-                logging.error(f'{e}: hit at RFC {file}')
+                logging.error(f"{e}: hit at RFC {file}")
                 pass
 
-    print('Successfully finished importing all files to database.')
-    print('Now removing unnecessary files from disk....')
+    print("Successfully finished importing all files to database.")
+    print("Now removing unnecessary files from disk....")
     remove_rfc_files()
-    print('...Done!')
+    print("...Done!")
 
 
 def create_tables():
@@ -311,24 +318,26 @@ def create_tables():
 
 
 def clear_screen():
-    os.system('clear')
+    os.system("clear")
 
 
 class Color:
-    HEADER = '\033[95m'
-    IMPORTANT = '\33[35m'
-    NOTICE = '\033[33m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    RED = '\033[91m'
-    END = '\033[0m'
-    UNDERLINE = '\033[4m'
-    LOGGING = '\33[34m'
+    HEADER = "\033[95m"
+    IMPORTANT = "\33[35m"
+    NOTICE = "\033[33m"
+    OKBLUE = "\033[94m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    RED = "\033[91m"
+    END = "\033[0m"
+    UNDERLINE = "\033[4m"
+    LOGGING = "\33[34m"
 
 
 def logo():
-    print(Color.HEADER + """
+    print(
+        Color.HEADER
+        + """
   _____  ______ _____               
  |  __ \|  ____/ ____|              
  | |__) | |__ | |       _ __  _   _ 
@@ -338,11 +347,15 @@ def logo():
                        | |     __/ |
                        |_|    |___/ 
 
-                    """ + Color.END)
+                    """
+        + Color.END
+    )
 
 
 def print_by_number():
-    print(Color.HEADER + '''
+    print(
+        Color.HEADER
+        + """
   ______     __  _   _ _    _ __  __ ____  ______ _____  
  |  _ \ \   / / | \ | | |  | |  \/  |  _ \|  ____|  __ \ 
  | |_) \ \_/ /  |  \| | |  | | \  / | |_) | |__  | |__) |
@@ -350,11 +363,15 @@ def print_by_number():
  | |_) | | |    | |\  | |__| | |  | | |_) | |____| | \ \ 
  |____/  |_|    |_| \_|\____/|_|  |_|____/|______|_|  \_\\
  
-  ''' + Color.END)
+  """
+        + Color.END
+    )
 
 
 def print_by_keyword():
-    print(Color.HEADER + '''
+    print(
+        Color.HEADER
+        + """
   ______     __  _  __________     ___          ______  _____  _____  
  |  _ \ \   / / | |/ /  ____\ \   / | \        / / __ \|  __ \|  __ \ 
  | |_) \ \_/ /  | ' /| |__   \ \_/ / \ \  /\  / / |  | | |__) | |  | |
@@ -362,11 +379,15 @@ def print_by_keyword():
  | |_) | | |    | . \| |____   | |     \  /\  / | |__| | | \ \| |__| |
  |____/  |_|    |_|\_\______|  |_|      \/  \/   \____/|_|  \_\_____/ 
                                                                       
-    ''' + Color.END)
+    """
+        + Color.END
+    )
 
 
 def print_by_bookmark():
-    print(Color.HEADER + '''
+    print(
+        Color.HEADER
+        + """
   ______     __  ____   ____   ____  _  ____  __          _____  _  __
  |  _ \ \   / / |  _ \ / __ \ / __ \| |/ /  \/  |   /\   |  __ \| |/ /
  | |_) \ \_/ /  | |_) | |  | | |  | | ' /| \  / |  /  \  | |__) | ' / 
@@ -374,4 +395,6 @@ def print_by_bookmark():
  | |_) | | |    | |_) | |__| | |__| | . \| |  | |/ ____ \| | \ \| . \ 
  |____/  |_|    |____/ \____/ \____/|_|\_\_|  |_/_/    \_\_|  \_\_|\_\\
 
-    ''' + Color.END)
+    """
+        + Color.END
+    )

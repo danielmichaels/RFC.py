@@ -11,30 +11,23 @@ $ twine upload -r pypi dist/*
 
 from setuptools import setup, find_packages
 
-NAME = 'RFC.py'
-VERSION = '1.3'
-DESCRIPTION = "A simple python client that offers users the ability to search" \
-              " for, read and bookmark RFC's from the Internet Engineering " \
-              "Task Force whilst offline."
-URL = 'https://github.com/danielmichaels/RFC.py'
-DOWNLOAD_URL = (URL + '/tarball/' + VERSION)
-AUTHOR = 'Daniel Michaels'
-AUTHOR_EMAIL = 'dans.address@outlook.com'
-REQUIRES_PYTHON = '>= Python 3.6'
+NAME = "RFC.py"
+VERSION = "1.3"
+DESCRIPTION = (
+    "A simple python client that offers users the ability to search"
+    " for, read and bookmark RFC's from the Internet Engineering "
+    "Task Force whilst offline."
+)
+URL = "https://github.com/danielmichaels/RFC.py"
+DOWNLOAD_URL = URL + "/tarball/" + VERSION
+AUTHOR = "Daniel Michaels"
+AUTHOR_EMAIL = "dans.address@outlook.com"
+REQUIRES_PYTHON = ">= Python 3.6"
 
 # Include what dependencies it requires:
-REQUIRED = [
-    'requests',
-    'click',
-    'peewee',
-    'responses'
-]
+REQUIRED = ["requests", "click", "peewee", "responses"]
 
-entry_points = {
-    'console_scripts': [
-        ['rfc = rfcpy.rfc:main']
-    ]
-}
+entry_points = {"console_scripts": [["rfc = rfcpy.rfc:main"]]}
 
 
 setup(
@@ -42,7 +35,7 @@ setup(
     version=VERSION,
     description=DESCRIPTION,
     long_description=DESCRIPTION,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
     url=URL,
@@ -50,13 +43,13 @@ setup(
     install_requires=REQUIRED,
     entry_points=entry_points,
     include_package_data=True,
-    license='MIT',
+    license="MIT",
     packages=find_packages(),
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6'
-    ]
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
+    ],
 )

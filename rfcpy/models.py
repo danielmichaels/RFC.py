@@ -10,7 +10,7 @@ from playhouse.sqlite_ext import *
 
 from rfcpy.config import Config
 
-db = SqliteExtDatabase(Config.DATABASE_PATH, pragmas={'journal_mode': 'wal'})
+db = SqliteExtDatabase(Config.DATABASE_PATH, pragmas={"journal_mode": "wal"})
 
 
 class BaseModel(Model):
@@ -40,5 +40,4 @@ class DataIndex(FTS5Model):
 
     class Meta:
         database = db
-        options = {
-            'tokenize': 'porter'}  # FTS5 includes more tokenizer options
+        options = {"tokenize": "porter"}  # FTS5 includes more tokenizer options

@@ -15,13 +15,24 @@ import click
 from peewee import OperationalError, DoesNotExist
 
 from rfcpy.models import Data, DataIndex
-from rfcpy.utils import sanitize_inputs, read_config, \
-    check_last_update, clear_screen, print_by_number, logo, Color, \
-    print_by_keyword, print_by_bookmark
+from rfcpy.utils import (
+    sanitize_inputs,
+    read_config,
+    check_last_update,
+    clear_screen,
+    print_by_number,
+    logo,
+    Color,
+    print_by_keyword,
+    print_by_bookmark,
+)
 
 logging.basicConfig(level=logging.INFO)
 
 prompt = "RFC.py ~# "
+
+# TODO: list x latest rfc's
+# TODO: GUI?
 
 
 def main():
@@ -36,7 +47,7 @@ def main():
         raise
 
     except KeyboardInterrupt:
-        print('User exited using CTRL-C')
+        print("User exited using CTRL-C")
 
 
 def home_page():
@@ -50,57 +61,61 @@ def home_page():
 
     clear_screen()
     logo()
-    print("""
+    print(
+        """
     [1] -- Search by Number
     [2] -- Search by Keyword
     [3] -- Search through Bookmark
     
     [0] -- User Options
     [q] or [Enter] - Quit!
-    """)
+    """
+    )
     choice = input(prompt)
-    if choice == '1':
+    if choice == "1":
         clear_screen()
         print_by_number()
         search_by_number()
-    elif choice == '2':
+    elif choice == "2":
         clear_screen()
         search_by_keyword()
-    elif choice == '3':
+    elif choice == "3":
         clear_screen()
         search_bookmarks()
-    elif choice == '0':
+    elif choice == "0":
         clear_screen()
         settings_page()
-    elif choice == 'q' or choice == '':
+    elif choice == "q" or choice == "":
         sys.exit()
     else:
-        print('[!!] Please Select Options [1,2 or 3] [!!]')
-        print('...exiting!')
+        print("[!!] Please Select Options [1,2 or 3] [!!]")
+        print("...exiting!")
 
 
 def search_by_number():
     """User is to enter a valid RFC for retrieval from database."""
 
     try:
-        print('[*] Enter RFC by number [eg. 8305]  [*]')
-        print('[*] OR Press [Enter] for Home Page  [*]')
-        number = input(f'{prompt}')
-        if number == '':
+        print("[*] Enter RFC by number [eg. 8305]  [*]")
+        print("[*] OR Press [Enter] for Home Page  [*]")
+        number = input(f"{prompt}")
+        if number == "":
             home_page()
         if not number.isdigit():
-            print('[!!] Please enter rfc using numbers only i.e. 8305 [!!]')
-            print('Exiting..')
+            print("[!!] Please enter rfc using numbers only i.e. 8305 [!!]")
+            print("Exiting..")
             sys.exit(1)
         result = Data.get_by_id(number).text
         pager(result)
         bookmarker(number)
 
     except DoesNotExist:
-        print(f'{Color.WARNING}[!!] Query not found! '
-              f'Please check the rfc number and try again [!!]{Color.END}')
+        print(
+            f"{Color.WARNING}[!!] Query not found! "
+            f"Please check the rfc number and try again [!!]{Color.END}"
+        )
     except OverflowError:
-        print('Integer enter is too large')
+        print("Integer enter is too large")
 
 
 def search_by_keyword():
@@ -111,21 +126,25 @@ def search_by_keyword():
     """
 
     print_by_keyword()
-    print('[*] Enter Keyword/s [http/2 hpack]')
-    phrase = input(f'{prompt}')
+    print("[*] Enter Keyword/s [http/2 hpack]")
+    phrase = input(f"{prompt}")
     phrase = sanitize_inputs(phrase)
-    query = (Data.select().join(DataIndex,
-                                on=(Data.number == DataIndex.rowid)).where(
-        DataIndex.match(phrase)).order_by(DataIndex.bm25()))
+    query = (
+        Data.select()
+        .join(DataIndex, on=(Data.number == DataIndex.rowid))
+        .where(DataIndex.match(phrase))
+        .order_by(DataIndex.bm25())
+    )
     try:
         for results in query:
             print(
-                f'{Color.OKBLUE}Matches:{Color.NOTICE} RFC {results.title[:5]}'
-                f'{Color.HEADER}- {results.title[5:]}{Color.END}')
+                f"{Color.OKBLUE}Matches:{Color.NOTICE} RFC {results.title[:5]}"
+                f"{Color.HEADER}- {results.title[5:]}{Color.END}"
+            )
         print()
         search_by_number()
     except OperationalError:
-        print('[!!] Database lookup error! [!!]')
+        print("[!!] Database lookup error! [!!]")
 
 
 def search_bookmarks():
@@ -138,7 +157,8 @@ def search_bookmarks():
     for result in query:
         print(
             f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
-            f"{result.title[5:]}{Color.END}")
+            f"{result.title[5:]}{Color.END}"
+        )
     search_by_number()
 
 
@@ -151,7 +171,7 @@ def settings_page():
     if choice == "1":
         clear_screen()
         update_bookmarks()
-    elif choice == '':
+    elif choice == "":
         home_page()
 
 
@@ -161,11 +181,13 @@ def update_bookmarks():
     print()
     query = Data.select().where(Data.bookmark == 1)
     for result in query:
-        print(f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
-              f"{result.title[5:]}{Color.END}")
+        print(
+            f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
+            f"{result.title[5:]}{Color.END}"
+        )
     print()
-    print('[*] Enter Bookmark to delete by number [eg. 8305]  [*]')
-    print('[*] OR Press [Enter] for Home Page                 [*]')
+    print("[*] Enter Bookmark to delete by number [eg. 8305]  [*]")
+    print("[*] OR Press [Enter] for Home Page                 [*]")
     choice = input(prompt)
 
     if choice.isdigit():
@@ -173,7 +195,7 @@ def update_bookmarks():
         update.save()
         update_bookmarks()
         print()
-    elif choice == '' or choice == "q":
+    elif choice == "" or choice == "q":
         home_page()
     else:
         print("\n[!] Please enter a valid number! [!]")
@@ -184,12 +206,25 @@ def update_bookmarks():
 def bookmarker(number):
     """Give user the option to bookmark the last read RFC, defaults to No."""
 
-    bookmark = input('Do you wish to bookmark this? [y/N] >> ')
-    if bookmark == 'y' or bookmark == 'Y':
-        print('YES', number)
+    bookmark = input("Do you wish to bookmark this? [y/N] >> ")
+    if bookmark == "y" or bookmark == "Y":
+        print("YES", number)
         update = Data(number=number, bookmark=1)
         update.save()
     home_page()
+
+
+def latest(number=10):
+    """Get the most recent RFC's returning ten by default but the user can
+    specify a set number to see.
+
+    :arg number (default=10) user can set how many to retrieve."""
+    query = Data.select().order_by(Data.id.desc()).get(number)
+    for result in query:
+        print(
+            f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
+            f"{result.title[5:]}{Color.END}"
+        )
 
 
 def pager(data):
@@ -200,5 +235,5 @@ def pager(data):
     return click.echo_via_pager(data)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
