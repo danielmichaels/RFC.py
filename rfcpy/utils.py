@@ -233,15 +233,11 @@ def download_rfc_tar():
 
     t1 = time.time()
     r = requests.get(Config.URL, stream=True)
-    dl_length = r.headers['Content-Length']
+    dl_length = r.headers["Content-Length"]
     if r.status_code == 200:
-<<<<<<< HEAD
-        with open(os.path.join(Config.ROOT_FOLDER, Config.FILENAME), "wb") as f:
-=======
         with open(
-                os.path.join(Config.ROOT_FOLDER, Config.FILENAME), 'wb') as f, \
-                click.progressbar(length=int(dl_length)) as bar:
->>>>>>> 947d097ebc1bd0554ebff6ca987448d72913d2bd
+            os.path.join(Config.ROOT_FOLDER, Config.FILENAME), "wb"
+        ) as f, click.progressbar(length=int(dl_length)) as bar:
             r.raw.decode_content = True
             for chunk in r.iter_content(1024):
                 f.write(chunk)
