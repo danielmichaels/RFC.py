@@ -89,7 +89,7 @@ def strip_extensions():
     """
 
     _, _, files = next(os.walk(Config.STORAGE_PATH))
-    dirty_extensions = ["a.txt", "rfc-index.txt", ".pdf", ".ps", ".ta"]
+    dirty_extensions = ["a.txt", "rfc-index.txt", ".pdf", ".ps", ".ta", ".html"]
     clean_list = (x for x in files if not any(xs in x for xs in dirty_extensions))
     return clean_list
 
@@ -304,16 +304,16 @@ def write_to_db():
                     )
 
             except IntegrityError as e:
-                logging.error(f"Integrity Error: {e} Raised at {number}")
+                logging.debug(f"Integrity Error: {e} Raised at {number}")
                 pass
             except AttributeError or ValueError as e:
-                logging.error(f"{e}: hit at RFC {file}")
+                logging.debug(f"{e}: hit at RFC {file}")
                 pass
-
-    print("Successfully finished importing all files to database.")
-    print("Now removing unnecessary files from disk....")
-    remove_rfc_files()
-    print("...Done!")
+    else:
+        remove_rfc_files()
+        print("Successfully finished importing all files to database.")
+        print("Now removing unnecessary files from disk....")
+        print("...Done!")
 
 
 def create_tables():

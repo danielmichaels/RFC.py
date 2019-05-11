@@ -6,7 +6,7 @@
     Includes full text search, RFC number search and bookmarking capabilities
     and weekly updates inline with the IETF policy of weekly additions.
 
-        Copyright (C) 2018, Daniel Michaels
+        Copyright (C) 2018-2019, Daniel Michaels
 """
 import logging
 import sys
@@ -32,7 +32,6 @@ logging.basicConfig(level=logging.INFO)
 prompt = "RFC.py ~# "
 
 # TODO: list x latest rfc's
-# TODO: GUI?
 
 
 def main():
