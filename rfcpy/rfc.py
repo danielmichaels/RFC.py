@@ -25,6 +25,7 @@ from rfcpy.utils import (
     Color,
     print_by_keyword,
     print_by_bookmark,
+    print_get_latest,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -65,6 +66,7 @@ def home_page():
     [1] -- Search by Number
     [2] -- Search by Keyword
     [3] -- Search through Bookmark
+    [4] -- Latest 10 RFC's
     
     [0] -- User Options
     [q] or [Enter] - Quit!
@@ -81,6 +83,9 @@ def home_page():
     elif choice == "3":
         clear_screen()
         search_bookmarks()
+    elif choice == "4":
+        clear_screen()
+        latest()
     elif choice == "0":
         clear_screen()
         settings_page()
@@ -213,17 +218,19 @@ def bookmarker(number):
     home_page()
 
 
-def latest(number=10):
+def latest():
     """Get the most recent RFC's returning ten by default but the user can
     specify a set number to see.
 
     :arg number (default=10) user can set how many to retrieve."""
-    query = Data.select().order_by(Data.id.desc()).get(number)
+    print_get_latest()
+    query = Data.select().order_by(Data.title.desc()).limit(10)
     for result in query:
         print(
             f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
             f"{result.title[5:]}{Color.END}"
         )
+    search_by_number()
 
 
 def pager(data):
