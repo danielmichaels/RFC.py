@@ -1,5 +1,6 @@
 """
 Publish a new version:
+$ check README and setup.py are correctly versioned
 $ git tag X.Y.Z -m "Release X.Y.Z"
 $ git push --tags
 $ pip install --upgrade twine wheel

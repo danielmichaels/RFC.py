@@ -6,7 +6,7 @@
  | | \ \| |   | |____ _| |_) | |_| |
  |_|  \_\_|    \_____(_) .__/ \__, |
                        | |     __/ |
-                       |_|    |___/   v 1.3
+                       |_|    |___/   v 2019.5.1
 ```
 
 # RFC.py
@@ -32,6 +32,7 @@ The initial setup can take some time. See [Setup Process](#setup-process) for mo
 See [requirements.txt](https://github.com/danielmichaels/RFC.py/blob/master/requirements.txt) for more details of what dependencies are required.
 
 **Currently tested only on Linux**
+
 specifically `Arch 4.17.x x86_64` but should work on most Linux systems.
 
 ## Demo
@@ -51,14 +52,17 @@ RFC.py runs in an interactive mode. It consists of a Home Page and three search 
 >> Home Page
 >>  - Search by Number
 >>  - Search by Keyword
->>  - Search by Bookmark
+>>  - Search through Bookmark
+>>  - Latest 10 RFC's
 
 **Search by Number**: The user can enter a valid RFC number
 
 **Search by Keyword**: The user can enter a series of keywords to search. The keywords within the title of each RFC are checked. Multiple keywords can be queried at once.
 Each result will list matching RFC's with their title and number, the user can then enter in the number they wish to view.
 
-**Search by Bookmark**: If any bookmarks have been stored, this will output them to the terminal. The user can then view an RFC by entering its number.
+**Search through Bookmark**: If any bookmarks have been stored, this will output them to the terminal. The user can then view an RFC by entering its number.
+
+**Latest 10 RFC's**: Returns the ten most recently added RFC's.
 
 The IETF releases new RFC's each Sunday. The application will prompt the user once every 7 days if they wish to download the new RFC's to the database. This is optional.
 
