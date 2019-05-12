@@ -119,7 +119,7 @@ def search_by_number():
             f"Please check the rfc number and try again [!!]{Color.END}"
         )
     except OverflowError:
-        print("Integer enter is too large")
+        print("Integer entered is too large.")
 
 
 def search_by_keyword():
