@@ -32,8 +32,6 @@ logging.basicConfig(level=logging.INFO)
 
 prompt = "RFC.py ~# "
 
-# TODO: list x latest rfc's
-
 
 def main():
     try:
