@@ -223,6 +223,7 @@ def latest():
     :arg number (default=10) user can set how many to retrieve."""
     print_get_latest()
     query = Data.select().order_by(Data.title.desc()).limit(10)
+    # this is a slow lookup - needs optimisation.
     for result in query:
         print(
             f"\t{Color.OKBLUE}RFC {result.number} - {Color.NOTICE}"
