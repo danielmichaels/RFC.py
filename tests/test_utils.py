@@ -6,7 +6,7 @@ import unittest
 from datetime import datetime
 from requests import ConnectionError, ConnectTimeout
 
-from rfcpy.utils import (
+from rfcpy.helpers.utils import (
     Config,
     create_config,
     update_config,

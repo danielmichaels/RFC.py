@@ -8,7 +8,7 @@ All credit: <https://github.com/coleifer/peewee>
 
 from playhouse.sqlite_ext import *
 
-from rfcpy.config import Config
+from rfcpy.helpers.config import Config
 
 db = SqliteExtDatabase(Config.DATABASE_PATH, pragmas={"journal_mode": "wal"})
 

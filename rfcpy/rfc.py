@@ -15,18 +15,15 @@ import click
 from peewee import OperationalError, DoesNotExist
 
 from rfcpy.models import Data, DataIndex
-from rfcpy.utils import (
-    sanitize_inputs,
-    read_config,
-    check_last_update,
-    clear_screen,
+from rfcpy.helpers.utils import sanitize_inputs, read_config, check_last_update
+from rfcpy.helpers.display import (
     print_by_number,
     logo,
     Color,
     print_by_keyword,
     print_by_bookmark,
     print_get_latest,
-)
+    clear_screen)
 
 logging.basicConfig(level=logging.INFO)
 
