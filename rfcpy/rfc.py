@@ -12,7 +12,7 @@ import logging
 import sys
 
 import click
-from peewee import OperationalError, DoesNotExist
+from peewee import OperationalError, DoesNotExist, fn
 
 from rfcpy.models import Data, DataIndex
 from rfcpy.helpers.utils import sanitize_inputs, read_config, check_last_update
@@ -23,7 +23,8 @@ from rfcpy.helpers.display import (
     print_by_keyword,
     print_by_bookmark,
     print_get_latest,
-    clear_screen)
+    clear_screen,
+)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -81,6 +82,9 @@ def home_page():
     elif choice == "4":
         clear_screen()
         latest()
+    elif choice == "5":
+        clear_screen()
+        random_rfc()
     elif choice == "0":
         clear_screen()
         settings_page()
@@ -227,6 +231,13 @@ def latest():
             f"{result.title[5:]}{Color.END}"
         )
     search_by_number()
+
+
+def random_rfc():
+    """Randomly selects a RFC."""
+    random = Data.select().order_by(fn.Random())
+    pager(random.text)
+    bookmarker(random)
 
 
 def pager(data):
