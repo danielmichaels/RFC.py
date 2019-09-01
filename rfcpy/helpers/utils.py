@@ -15,7 +15,7 @@ import requests
 from peewee import IntegrityError
 
 from rfcpy.helpers.config import Config
-from rfcpy.models import db, Data, DataIndex
+from rfcpy.models import db, Data, DataIndex, create_tables
 
 logging.basicConfig(level=logging.INFO)
 
@@ -35,7 +35,7 @@ def timer(function):
     def wrapper(*args, **kwargs):
         t1 = time.time()
         result = function(*args, **kwargs)
-        logging.info(f"Time taken in seconds: {time.time() - t1}")
+        click.echo(f"Download completed in {time.time() - t1:.2f} seconds")
         return result
 
     return wrapper
@@ -338,8 +338,3 @@ def write_to_db():
         print("...Done!")
 
 
-def create_tables():
-    """Create the models tables."""
-
-    with db:
-        db.create_tables([Data, DataIndex], safe=True)
