@@ -24,11 +24,8 @@ from rfcpy.helpers.display import (
     print_by_bookmark,
     print_get_latest,
     clear_screen,
+    prompt
 )
-
-logging.basicConfig(level=logging.INFO)
-
-prompt = "RFC.py ~# "
 
 
 def main():
@@ -63,6 +60,7 @@ def home_page():
     [2] -- Search by Keyword
     [3] -- Search through Bookmark
     [4] -- Latest 10 RFC's
+    [5] -- Get a Random RFC
     
     [0] -- User Options
     [q] or [Enter] - Quit!
@@ -235,8 +233,9 @@ def latest():
 
 def random_rfc():
     """Randomly selects a RFC."""
-    random = Data.select().order_by(fn.Random())
-    pager(random.text)
+    random = Data.select().order_by(fn.Random()).limit(1)
+    for record in random:
+        pager(record.text)
     bookmarker(random)
 
 
