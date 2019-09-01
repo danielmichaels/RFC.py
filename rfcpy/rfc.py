@@ -10,12 +10,18 @@
 """
 import logging
 import sys
+from time import sleep
 
 import click
 from peewee import OperationalError, DoesNotExist, fn
 
 from rfcpy.models import Data, DataIndex
-from rfcpy.helpers.utils import sanitize_inputs, read_config, check_last_update
+from rfcpy.helpers.utils import (
+    sanitize_inputs,
+    read_config,
+    check_last_update,
+    ask_user_to_update,
+)
 from rfcpy.helpers.display import (
     print_by_number,
     logo,
@@ -24,7 +30,7 @@ from rfcpy.helpers.display import (
     print_by_bookmark,
     print_get_latest,
     clear_screen,
-    prompt
+    prompt,
 )
 
 
@@ -167,12 +173,18 @@ def settings_page():
     """Print list of user adjustable settings."""
     print("[*] User Options\n")
     print(f"{Color.NOTICE}[1] Delete bookmarks{Color.END}\n")
+    print(f"{Color.NOTICE}[2] Manual Update RFC Database{Color.END}\n")
     print("[Enter] Return to Home Page\n")
     choice = input(prompt)
     if choice == "1":
         clear_screen()
         update_bookmarks()
-    elif choice == "":
+    elif choice == "2":
+        clear_screen()
+        ask_user_to_update()
+        sleep(2)
+        home_page()
+    else:
         home_page()
 
 
