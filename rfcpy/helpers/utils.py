@@ -1,6 +1,7 @@
 """Utility functions and classes used in RFC.py"""
 
 import configparser
+import functools
 import logging
 import os
 import re
@@ -17,6 +18,26 @@ from rfcpy.helpers.config import Config
 from rfcpy.models import db, Data, DataIndex
 
 logging.basicConfig(level=logging.INFO)
+
+
+def timer(function):
+    """
+    Timer decorator for return a functions execution in seconds.
+
+    Args:
+        function: function to be timed
+
+    Returns: time taken plus the original function executed.
+
+    """
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        t1 = time.time()
+        result = function(*args, **kwargs)
+        logging.info(f"Time taken in seconds: {time.time() - t1}")
+        return result
+
+    return wrapper
 
 
 def get_categories(text):
@@ -231,7 +252,6 @@ def download_rfc_tar():
     Download progress is tracked via click.progressbar.
     """
 
-    t1 = time.time()
     r = requests.get(Config.URL, stream=True)
     dl_length = r.headers["Content-Length"]
     if r.status_code == 200:
@@ -244,7 +264,6 @@ def download_rfc_tar():
                 bar.update(len(chunk))
 
         print("..\n[*] Download complete [*]")
-    logging.info(f"Time taken in seconds: {time.time() - t1}")
 
 
 def uncompress_tar():
