@@ -41,3 +41,10 @@ class DataIndex(FTS5Model):
     class Meta:
         database = db
         options = {"tokenize": "porter"}  # FTS5 includes more tokenizer options
+
+
+def create_tables():
+    """Create the models tables."""
+
+    with db:
+        db.create_tables([Data, DataIndex], safe=True)
