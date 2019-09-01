@@ -2,6 +2,7 @@ import os
 
 prompt = "RFC.py ~# "
 
+
 def clear_screen():
     os.system("clear")
 

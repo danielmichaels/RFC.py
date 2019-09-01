@@ -30,6 +30,7 @@ def timer(function):
     Returns: time taken plus the original function executed.
 
     """
+
     @functools.wraps(function)
     def wrapper(*args, **kwargs):
         t1 = time.time()
@@ -247,8 +248,10 @@ def first_run_update():
         raise
 
 
+@timer
 def download_rfc_tar():
-    """Download all RFC's from IETF in a tar.gz for offline sorting.
+    """
+    Download all RFC's from IETF in a tar.gz for offline sorting.
     Download progress is tracked via click.progressbar.
     """
 
