@@ -336,5 +336,3 @@ def write_to_db():
         print("Successfully finished importing all files to database.")
         print("Now removing unnecessary files from disk....")
         print("...Done!")
-
-
