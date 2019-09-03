@@ -6,7 +6,7 @@
  | | \ \| |   | |____ _| |_) | |_| |
  |_|  \_\_|    \_____(_) .__/ \__, |
                        | |     __/ |
-                       |_|    |___/   v 2019.5.1
+                       |_|    |___/   v 2019.9.1
 ```
 
 # RFC.py
@@ -47,13 +47,15 @@ specifically `Arch 4.17.x x86_64` but should work on most Linux systems.
 ## Basic Usage
 ----
 
-RFC.py runs in an interactive mode. It consists of a Home Page and three search options.
+RFC.py runs in an interactive mode. It consists of a Home Page and several search options.
 
 >> Home Page
 >>  - Search by Number
 >>  - Search by Keyword
 >>  - Search through Bookmark
 >>  - Latest 10 RFC's
+>>  - Get a Random RFC
+>>  - User Options
 
 **Search by Number**: The user can enter a valid RFC number
 
@@ -64,7 +66,15 @@ Each result will list matching RFC's with their title and number, the user can t
 
 **Latest 10 RFC's**: Returns the ten most recently added RFC's.
 
-The IETF releases new RFC's each Sunday. The application will prompt the user once every 7 days if they wish to download the new RFC's to the database. This is optional.
+**Get a Random RFC**: Return a single random RFC to the user.
+
+**User Options**:
+
+    - Delete Bookmarks
+    - Manually Update RFC Database
+
+The IETF releases new RFC's each Sunday. The application will prompt the user once every 7 days if they wish to download the new RFC's to the database. 
+This is optional. Users can also manually update the database if they wish.
 
 ### Setup Process
 
