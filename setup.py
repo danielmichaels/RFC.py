@@ -7,13 +7,13 @@ $ pip install --upgrade twine wheel
 $ python setup.py sdist bdist_wheel
 $ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
     // ABOVE ONLY FOR TESTING
-$ twine upload -r pypi dist/*
+$ twine upload dist/*
 """
 
 from setuptools import setup, find_packages
 
 NAME = "RFC.py"
-VERSION = "2019.9.1"
+VERSION = "2019.9.2"
 DESCRIPTION = (
     "A simple python client that offers users the ability to search"
     " for, read and bookmark RFC's from the Internet Engineering "
