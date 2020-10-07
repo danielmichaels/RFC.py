@@ -6,9 +6,8 @@
     Includes full text search, RFC number search and bookmarking capabilities
     and weekly updates inline with the IETF policy of weekly additions.
 
-        Copyright (C) 2018-2019, Daniel Michaels
+        Copyright (C) 2018-2020, Daniel Michaels
 """
-import logging
 import sys
 from time import sleep
 
@@ -48,6 +47,9 @@ def main():
     except KeyboardInterrupt:
         print("User exited using CTRL-C")
 
+    except EOFError:
+        print("User exited using CTRL-D")
+
 
 def home_page():
     """Interactive home page which user can use to select their type of search.
@@ -55,6 +57,8 @@ def home_page():
     :options:   1. Search by RFC number
                 2. Search by keyword (using Sqlite FTS5)
                 3. Search bookmarks
+                4. Latest 10 RFC's
+                5. Get a random RFC
                 [q] or [Enter] to quit application
     """
 
