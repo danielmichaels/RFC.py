@@ -12,25 +12,14 @@ import sys
 from time import sleep
 
 import click
-from peewee import OperationalError, DoesNotExist, fn
+from peewee import DoesNotExist, OperationalError, fn
 
+from rfcpy.helpers.display import (Color, clear_screen, logo,
+                                   print_by_bookmark, print_by_keyword,
+                                   print_by_number, print_get_latest, prompt)
+from rfcpy.helpers.utils import (ask_user_to_update, check_last_update,
+                                 read_config, sanitize_inputs)
 from rfcpy.models import Data, DataIndex
-from rfcpy.helpers.utils import (
-    sanitize_inputs,
-    read_config,
-    check_last_update,
-    ask_user_to_update,
-)
-from rfcpy.helpers.display import (
-    print_by_number,
-    logo,
-    Color,
-    print_by_keyword,
-    print_by_bookmark,
-    print_get_latest,
-    clear_screen,
-    prompt,
-)
 
 
 def main():

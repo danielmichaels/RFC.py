@@ -1,19 +1,15 @@
 import os
-import requests
-import responses
 import shutil
 import unittest
 from datetime import datetime
+
+import requests
+import responses
 from requests.exceptions import ConnectionError, ConnectTimeout
 
-from rfcpy.helpers.utils import (
-    Config,
-    create_config,
-    update_config,
-    get_categories,
-    read_last_conf_update,
-    sanitize_inputs,
-)
+from rfcpy.helpers.utils import (Config, create_config, get_categories,
+                                 read_last_conf_update, sanitize_inputs,
+                                 update_config)
 
 
 class TestUtils(unittest.TestCase):
