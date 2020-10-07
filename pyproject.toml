@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "rfc.py"
+version = "2020.10.1"
+description = "A simple python client that offers users the ability to search for, read and bookmark RFC's from the Internet Engineering Task Force whilst offline."
+authors = ["danielmichaels <dans.address@outlook.com>"]
+license = "MIT"
+packages = [
+    { include = "rfcpy" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "^7.1.2"
+peewee = "^3.13.3"
+requests = "^2.24.0"
+
+[tool.poetry.dev-dependencies]
+responses = "^0.12.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+rfc = "rfcpy.rfc:main"

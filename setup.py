@@ -13,7 +13,7 @@ $ twine upload dist/*
 from setuptools import setup, find_packages
 
 NAME = "RFC.py"
-VERSION = "2019.9.2"
+VERSION = "2020.10.1"
 DESCRIPTION = (
     "A simple python client that offers users the ability to search"
     " for, read and bookmark RFC's from the Internet Engineering "
