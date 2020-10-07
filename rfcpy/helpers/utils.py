@@ -15,7 +15,7 @@ import requests
 from peewee import IntegrityError
 
 from rfcpy.helpers.config import Config
-from rfcpy.models import db, Data, DataIndex, create_tables
+from rfcpy.models import Data, DataIndex, create_tables, db
 
 logging.basicConfig(level=logging.INFO)
 
@@ -110,10 +110,18 @@ def strip_extensions():
     :return clean_list: generator of files with unwanted items removed
     """
     # This continually breaks as the IETF adds more file types
-    # let's look to make it find only postitives (txt) rather 
+    # let's look to make it find only postitives (txt) rather
     # parse out negatives (non-txt).
     _, _, files = next(os.walk(Config.STORAGE_PATH))
-    dirty_extensions = ["a.txt", "rfc-index.txt", ".pdf", ".ps", ".ta", ".html", ".json"]
+    dirty_extensions = [
+        "a.txt",
+        "rfc-index.txt",
+        ".pdf",
+        ".ps",
+        ".ta",
+        ".html",
+        ".json",
+    ]
     clean_list = (x for x in files if not any(xs in x for xs in dirty_extensions))
     return clean_list
 

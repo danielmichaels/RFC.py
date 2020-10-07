@@ -10,7 +10,7 @@ $ twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 $ twine upload dist/*
 """
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 NAME = "RFC.py"
 VERSION = "2020.10.1"

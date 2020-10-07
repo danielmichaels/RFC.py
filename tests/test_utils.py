@@ -1,25 +1,23 @@
 import os
-import requests
-import responses
 import shutil
 import unittest
 from datetime import datetime
-from requests import ConnectionError, ConnectTimeout
 
-from rfcpy.helpers.utils import (
-    Config,
-    create_config,
-    update_config,
-    get_categories,
-    read_last_conf_update,
-    sanitize_inputs,
-)
+import requests
+import responses
+from requests.exceptions import ConnectionError, ConnectTimeout
+
+from rfcpy.helpers.utils import (Config, create_config, get_categories,
+                                 read_last_conf_update, sanitize_inputs,
+                                 update_config)
 
 
 class TestUtils(unittest.TestCase):
     """Testing utility functions."""
 
     def setUp(self):
+        if not os.path.exists(Config.ROOT_FOLDER):
+            os.mkdir(Config.ROOT_FOLDER)
         if not os.path.exists(Config.TESTS_FOLDER):
             os.mkdir(Config.TESTS_FOLDER)
         create_config(testing=True)
