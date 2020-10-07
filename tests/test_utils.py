@@ -4,7 +4,7 @@ import responses
 import shutil
 import unittest
 from datetime import datetime
-from requests import ConnectionError, ConnectTimeout
+from requests.exceptions import ConnectionError, ConnectTimeout
 
 from rfcpy.helpers.utils import (
     Config,
@@ -20,6 +20,8 @@ class TestUtils(unittest.TestCase):
     """Testing utility functions."""
 
     def setUp(self):
+        if not os.path.exists(Config.ROOT_FOLDER):
+            os.mkdir(Config.ROOT_FOLDER)
         if not os.path.exists(Config.TESTS_FOLDER):
             os.mkdir(Config.TESTS_FOLDER)
         create_config(testing=True)
