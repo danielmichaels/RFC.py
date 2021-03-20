@@ -32,7 +32,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "peewee"
-version = "3.14.3"
+version = "3.14.4"
 description = "a little orm"
 category = "main"
 optional = false
@@ -116,7 +116,7 @@ idna = [
     {file = "idna-2.10.tar.gz", hash = "sha256:b307872f855b18632ce0c21c5e45be78c0ea7ae4c15c828c20788b26921eb3f6"},
 ]
 peewee = [
-    {file = "peewee-3.14.3.tar.gz", hash = "sha256:c90281517168448fa876e9a6c28d6c4f675ece1e42bc722f1fc8abf349edb497"},
+    {file = "peewee-3.14.4.tar.gz", hash = "sha256:9e356b327c2eaec6dd42ecea6f4ddded025793dba906a3d065a0452e726c51a2"},
 ]
 requests = [
     {file = "requests-2.25.1-py2.py3-none-any.whl", hash = "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"},
